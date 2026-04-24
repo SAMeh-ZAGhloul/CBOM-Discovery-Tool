@@ -59,6 +59,22 @@ Open your browser: **http://localhost:5001**
 
 ### 3. Generate Traffic (for Zeek to discover)
 
+The easiest way is using the included traffic generator script:
+
+```bash
+# Run all traffic scenarios once (default)
+./generate-traffic.sh
+
+# Or run specific scenarios
+./generate-traffic.sh web    # HTTPS web app only
+./generate-traffic.sh ssh    # SSH service only
+./generate-traffic.sh db     # PostgreSQL database only
+./generate-traffic.sh mixed  # Simultaneous cross-service traffic
+./generate-traffic.sh loop   # Continuously loop all scenarios
+```
+
+Alternatively, test services manually:
+
 ```bash
 # Test HTTPS Web App
 curl -k https://localhost:8443/api/data
@@ -82,6 +98,7 @@ The dashboard auto-refreshes every 60 seconds when new logs are detected. Click 
 ```
 cbom-discovery/
 ├── docker-compose.yml          # Orchestrates all services
+├── generate-traffic.sh         # Traffic generator for sample apps
 ├── README.md                   # This file
 │
 ├── zeek/                       # Network Monitor
@@ -266,6 +283,52 @@ The analyzer uses `watchdog` to monitor the shared logs directory. CBOM is autom
 | DES/3DES | Replace with AES-256-GCM |
 | RSA | Consider migrating to ECDSA or Ed25519 |
 | DH | Use ECDHE with Curve25519 for key exchange |
+
+## Traffic Generator
+
+The `generate-traffic.sh` script automates network traffic generation across all sample applications to help Zeek discover cryptographic assets.
+
+### Prerequisites
+- `curl` (required)
+- `sshpass` (optional, for SSH scenarios)
+- `psql` (optional, for database scenarios)
+
+### Usage
+
+| Command | Description |
+|---------|-------------|
+| `./generate-traffic.sh` or `./generate-traffic.sh all` | Run all scenarios once |
+| `./generate-traffic.sh web` | HTTPS web application traffic only |
+| `./generate-traffic.sh ssh` | SSH service traffic only |
+| `./generate-traffic.sh db` | PostgreSQL database traffic only |
+| `./generate-traffic.sh mixed` | Simultaneous cross-service traffic |
+| `./generate-traffic.sh loop` | Continuously loop all scenarios |
+| `./generate-traffic.sh help` | Show help message |
+
+### Scenarios
+
+**Web Scenario**
+- Fetches homepage, `/api/data`, and `/api/health`
+- Simulates 10 rapid load requests
+
+**SSH Scenario**
+- Executes `uname -a`, `ls -la`, and `cat /etc/os-release`
+- Opens 5 rapid SSH connections
+
+**Database Scenario**
+- Runs SELECT, COUNT, and INSERT queries on `crypto_inventory`
+- Simulates 5 rapid DB connections over TLS
+
+**Mixed Scenario**
+- Runs web, SSH, and database requests in parallel
+
+### Loop Mode
+
+```bash
+./generate-traffic.sh loop
+```
+
+Runs all scenarios continuously with a 10-second delay between iterations. Press `Ctrl+C` to stop.
 
 ## API Endpoints
 
