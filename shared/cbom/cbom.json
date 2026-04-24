@@ -2,7 +2,7 @@
   "metadata": {
     "tool": "CBOM Discovery Tool",
     "version": "1.0.0",
-    "generated_at": "2026-04-24T13:21:11.747173Z",
+    "generated_at": "2026-04-24T13:21:14.793620Z",
     "format": "CBOM-1.0"
   },
   "summary": {
@@ -1908,9 +1908,9 @@
       ],
       "algorithms": [
         "curve25519-sha256",
+        "aes128-gcm@openssh.com",
         "hmac-sha2-256-etm@openssh.com",
-        "SSH-2",
-        "aes128-gcm@openssh.com"
+        "SSH-2"
       ],
       "asset_count": 144
     }
