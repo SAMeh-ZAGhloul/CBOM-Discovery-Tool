@@ -14,6 +14,9 @@
 redef LogAscii::use_json = T;
 redef LogAscii::json_timestamps = JSON::TS_ISO8601;
 
+# Ignore invalid checksums (required for Docker/NAT environments)
+redef ignore_checksums = T;
+
 # SSL logging options (commented out as they may not be available)
 # redef SSL::log_cipher_spec = T;
 # redef SSL::log_key_length = T;

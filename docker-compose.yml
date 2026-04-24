@@ -16,8 +16,10 @@ services:
       - ./zeek/scripts:/zeek/scripts:ro
     command: >
       sh -c "echo 'Starting Zeek on eth0...' && 
-      (zeek -i eth0 local /zeek/scripts/crypto-detection.zeek || 
-       zeek -i any local /zeek/scripts/crypto-detection.zeek || 
+      mkdir -p /zeek/logs && 
+      cd /zeek/logs && 
+      (zeek -i eth0 -C local /zeek/scripts/crypto-detection.zeek || 
+       zeek -i any -C local /zeek/scripts/crypto-detection.zeek || 
        echo 'Interface not found, running in standalone mode')"
     restart: unless-stopped
     depends_on:
