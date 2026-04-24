@@ -1,1 +1,0 @@
-{"ts":"2026-04-24T13:19:39.283686Z","level":"Reporter::ERROR","message":"Failed to open GeoIP location database (lookup_location(SSH::lookup_ip))","location":"/usr/local/zeek/share/zeek/policy/protocols/ssh/geo-data.zeek, line 30"}

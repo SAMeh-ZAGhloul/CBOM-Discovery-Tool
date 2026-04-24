@@ -62,7 +62,7 @@ Open your browser: **http://localhost:5001**
 **Option A — Dashboard (Recommended)**  
 Open the dashboard at **http://localhost:5001** and use the **Traffic Generator** panel to start any scenario with a single click. Live output streams directly in the UI.
 
-**Option B — CLI Script**
+**Option B — CLI Script (Linux only)**
 
 ```bash
 # Run all traffic scenarios once (default)
@@ -83,12 +83,12 @@ Alternatively, test services manually:
 curl -k https://localhost:8443/api/data
 
 # Test SSH Service (password: cbom_demo_2024!)
-# Note: On macOS, install sshpass first: brew install sshpass
+# Note: sshpass first
 sshpass -p 'cbom_demo_2024!' ssh -p 2222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null cbomuser@localhost
 
 # Test Database (password: cbom_demo_pass)
-# Note: On macOS, install libpq first: brew install libpq
-# Then add to PATH: export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+# Note: install libpq 
+# Then add to PATH
 psql "postgresql://postgres:cbom_demo_pass@localhost:5432/crypto_inventory?sslmode=require"
 ```
 

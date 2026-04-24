@@ -44,9 +44,18 @@ services:
       - FLASK_PORT=5000
       - LOG_PATH=/app/logs
       - CBOM_PATH=/app/cbom
+      # Connect via internal Docker network so traffic is seen by Zeek
       - TRAFFIC_HOST=host.docker.internal
+      - WEB_APP_HOST=web-app
+      - WEB_APP_PORT=8443
+      - SSH_HOST=ssh-service
+      - SSH_PORT=22
+      - DB_HOST=database-service
+      - DB_PORT=5432
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - cbom-net
     depends_on:
       - zeek
     restart: unless-stopped
