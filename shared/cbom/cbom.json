@@ -2,18 +2,25 @@
   "metadata": {
     "tool": "CBOM Discovery Tool",
     "version": "1.0.0",
-    "generated_at": "2026-04-24T11:39:32.109471Z",
+    "generated_at": "2026-04-24T11:42:32.068653Z",
     "format": "CBOM-1.0"
   },
   "summary": {
-    "total_crypto_assets": 2,
-    "total_services": 1,
+    "total_crypto_assets": 10,
+    "total_services": 3,
     "risk_score": 0,
     "protocols": {
-      "unknown": 2
+      "tcp": 3
     },
     "algorithms": {
-      "unknown": 2
+      "TLS_AES_256_GCM_SHA384": 2,
+      "TLSv13": 2,
+      "x25519": 1,
+      "secp256r1": 1,
+      "aes128-gcm@openssh.com": 1,
+      "hmac-sha2-256-etm@openssh.com": 1,
+      "curve25519-sha256": 1,
+      "SSH-2": 1
     },
     "key_lengths": {},
     "total_findings": 0,
@@ -23,52 +30,189 @@
   "crypto_assets": [
     {
       "id": "crypto-0",
-      "type": "unknown",
-      "algorithm": "unknown",
-      "protocol": "unknown",
-      "service": "unknown",
-      "source": "unknown",
-      "confidence": "medium",
-      "timestamp": "2026-04-24T11:36:33.371212Z",
-      "connection_uid": "CkIipC3CyD1d3BqlZa",
+      "type": "cipher",
+      "algorithm": "TLS_AES_256_GCM_SHA384",
+      "protocol": "tcp",
+      "service": "https",
+      "source": "ssl",
+      "confidence": "high",
+      "timestamp": "2026-04-24T11:41:53.954466Z",
+      "connection_uid": "CRImhB4EhO5mzvGUc3",
+      "key_length": null,
+      "hash_algorithm": null,
+      "tls_version": "TLSv13",
+      "curve": "x25519",
+      "server_name": "localhost"
+    },
+    {
+      "id": "crypto-1",
+      "type": "protocol",
+      "algorithm": "TLSv13",
+      "protocol": "tcp",
+      "service": "https",
+      "source": "ssl",
+      "confidence": "high",
+      "timestamp": "2026-04-24T11:41:53.954466Z",
+      "connection_uid": "CRImhB4EhO5mzvGUc3",
       "key_length": null,
       "hash_algorithm": null
     },
     {
-      "id": "crypto-1",
-      "type": "unknown",
-      "algorithm": "unknown",
-      "protocol": "unknown",
-      "service": "unknown",
-      "source": "unknown",
-      "confidence": "medium",
-      "timestamp": "2026-04-24T11:36:34.116240Z",
-      "connection_uid": "CZ6chqs7OUNzocIrh",
+      "id": "crypto-2",
+      "type": "key-exchange",
+      "algorithm": "x25519",
+      "protocol": "tcp",
+      "service": "https",
+      "source": "ssl",
+      "confidence": "high",
+      "timestamp": "2026-04-24T11:41:53.954466Z",
+      "connection_uid": "CRImhB4EhO5mzvGUc3",
+      "key_length": null,
+      "hash_algorithm": null
+    },
+    {
+      "id": "crypto-3",
+      "type": "cipher",
+      "algorithm": "TLS_AES_256_GCM_SHA384",
+      "protocol": "tcp",
+      "service": "postgresql",
+      "source": "ssl",
+      "confidence": "high",
+      "timestamp": "2026-04-24T11:41:54.966662Z",
+      "connection_uid": "Cx38Xb1LO1EQAmXHt7",
+      "key_length": null,
+      "hash_algorithm": null,
+      "tls_version": "TLSv13",
+      "curve": "secp256r1",
+      "server_name": "localhost"
+    },
+    {
+      "id": "crypto-4",
+      "type": "protocol",
+      "algorithm": "TLSv13",
+      "protocol": "tcp",
+      "service": "postgresql",
+      "source": "ssl",
+      "confidence": "high",
+      "timestamp": "2026-04-24T11:41:54.966662Z",
+      "connection_uid": "Cx38Xb1LO1EQAmXHt7",
+      "key_length": null,
+      "hash_algorithm": null
+    },
+    {
+      "id": "crypto-5",
+      "type": "key-exchange",
+      "algorithm": "secp256r1",
+      "protocol": "tcp",
+      "service": "postgresql",
+      "source": "ssl",
+      "confidence": "high",
+      "timestamp": "2026-04-24T11:41:54.966662Z",
+      "connection_uid": "Cx38Xb1LO1EQAmXHt7",
+      "key_length": null,
+      "hash_algorithm": null
+    },
+    {
+      "id": "crypto-6",
+      "type": "cipher",
+      "algorithm": "aes128-gcm@openssh.com",
+      "protocol": "tcp",
+      "service": "ssh",
+      "source": "ssh",
+      "confidence": "high",
+      "timestamp": "2026-04-24T11:41:54.349125Z",
+      "connection_uid": "ClqH722CMPDFYkpv3b",
+      "key_length": null,
+      "hash_algorithm": null
+    },
+    {
+      "id": "crypto-7",
+      "type": "mac",
+      "algorithm": "hmac-sha2-256-etm@openssh.com",
+      "protocol": "tcp",
+      "service": "ssh",
+      "source": "ssh",
+      "confidence": "high",
+      "timestamp": "2026-04-24T11:41:54.349125Z",
+      "connection_uid": "ClqH722CMPDFYkpv3b",
+      "key_length": null,
+      "hash_algorithm": null
+    },
+    {
+      "id": "crypto-8",
+      "type": "key-exchange",
+      "algorithm": "curve25519-sha256",
+      "protocol": "tcp",
+      "service": "ssh",
+      "source": "ssh",
+      "confidence": "high",
+      "timestamp": "2026-04-24T11:41:54.349125Z",
+      "connection_uid": "ClqH722CMPDFYkpv3b",
+      "key_length": null,
+      "hash_algorithm": null
+    },
+    {
+      "id": "crypto-9",
+      "type": "protocol",
+      "algorithm": "SSH-2",
+      "protocol": "tcp",
+      "service": "ssh",
+      "source": "ssh",
+      "confidence": "high",
+      "timestamp": "2026-04-24T11:41:54.349125Z",
+      "connection_uid": "ClqH722CMPDFYkpv3b",
       "key_length": null,
       "hash_algorithm": null
     }
   ],
   "services": [
     {
-      "name": "unknown",
+      "name": "https",
       "protocols": [
-        "unknown"
+        "tcp"
       ],
       "algorithms": [
-        "unknown"
+        "TLSv13",
+        "TLS_AES_256_GCM_SHA384",
+        "x25519"
       ],
-      "asset_count": 2
+      "asset_count": 3
+    },
+    {
+      "name": "postgresql",
+      "protocols": [
+        "tcp"
+      ],
+      "algorithms": [
+        "secp256r1",
+        "TLSv13",
+        "TLS_AES_256_GCM_SHA384"
+      ],
+      "asset_count": 3
+    },
+    {
+      "name": "ssh",
+      "protocols": [
+        "tcp"
+      ],
+      "algorithms": [
+        "curve25519-sha256",
+        "aes128-gcm@openssh.com",
+        "hmac-sha2-256-etm@openssh.com",
+        "SSH-2"
+      ],
+      "asset_count": 4
     }
   ],
   "certificates": [],
   "keys": [
     {
       "id": "ssh-0",
-      "host_key": "",
+      "host_key": "SHA256:cMScKZJjeICXy2sZzT/XdN0ku6XmQ64z",
       "client_key": "",
-      "algorithm": "",
+      "algorithm": "ssh-ed25519",
       "source": "ssh",
-      "timestamp": "2026-04-24T11:36:33.617832Z"
+      "timestamp": "2026-04-24T11:41:54.349125Z"
     }
   ],
   "findings": []
