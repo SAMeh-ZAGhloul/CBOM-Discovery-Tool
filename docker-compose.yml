@@ -18,9 +18,7 @@ services:
       sh -c "echo 'Starting Zeek on eth0...' && 
       mkdir -p /zeek/logs && 
       cd /zeek/logs && 
-      (zeek -i eth0 -C local /zeek/scripts/crypto-detection.zeek || 
-       zeek -i any -C local /zeek/scripts/crypto-detection.zeek || 
-       echo 'Interface not found, running in standalone mode')"
+      zeek -i eth0 -C local /zeek/scripts/crypto-detection.zeek"
     restart: unless-stopped
     depends_on:
       - web-app
@@ -44,13 +42,13 @@ services:
       - FLASK_PORT=5000
       - LOG_PATH=/app/logs
       - CBOM_PATH=/app/cbom
-      # Connect via internal Docker network so traffic is seen by Zeek
+      # Route traffic through Docker host gateway so Zeek (host mode) can see it
       - TRAFFIC_HOST=host.docker.internal
-      - WEB_APP_HOST=web-app
+      - WEB_APP_HOST=host.docker.internal
       - WEB_APP_PORT=8443
-      - SSH_HOST=ssh-service
-      - SSH_PORT=22
-      - DB_HOST=database-service
+      - SSH_HOST=host.docker.internal
+      - SSH_PORT=2222
+      - DB_HOST=host.docker.internal
       - DB_PORT=5432
     extra_hosts:
       - "host.docker.internal:host-gateway"
