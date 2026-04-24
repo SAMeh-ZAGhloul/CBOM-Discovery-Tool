@@ -59,7 +59,10 @@ Open your browser: **http://localhost:5001**
 
 ### 3. Generate Traffic (for Zeek to discover)
 
-The easiest way is using the included traffic generator script:
+**Option A — Dashboard (Recommended)**  
+Open the dashboard at **http://localhost:5001** and use the **Traffic Generator** panel to start any scenario with a single click. Live output streams directly in the UI.
+
+**Option B — CLI Script**
 
 ```bash
 # Run all traffic scenarios once (default)
@@ -258,6 +261,9 @@ Generated CBOM follows this structure:
 
 ## Analyzer Features
 
+### Integrated Traffic Generator
+The dashboard includes built-in controls to generate traffic against the sample applications without leaving your browser. Click any scenario button (Web, SSH, Database, Mixed, All, or Loop) and watch live output stream in the panel.
+
 ### Auto-Regeneration
 The analyzer uses `watchdog` to monitor the shared logs directory. CBOM is automatically regenerated when:
 - New `.log` files are created
@@ -343,6 +349,9 @@ Runs all scenarios continuously with a 10-second delay between iterations. Press
 | `/api/services` | GET | Discovered services |
 | `/api/refresh` | POST | Force CBOM regeneration |
 | `/download/cbom` | GET | Download CBOM JSON file |
+| `/api/traffic/<scenario>` | POST | Run traffic scenario (`web`, `ssh`, `db`, `mixed`, `all`, `loop`) |
+| `/api/traffic/status` | GET | Traffic generator status and live output |
+| `/api/traffic/stop` | POST | Stop active traffic generation |
 
 ## Troubleshooting
 

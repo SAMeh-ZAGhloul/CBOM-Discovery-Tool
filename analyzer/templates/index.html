@@ -256,6 +256,31 @@
         .badge-low { background: rgba(16, 185, 129, 0.2); color: #a7f3d0; }
         .badge-info { background: rgba(59, 130, 246, 0.2); color: #bfdbfe; }
 
+        /* Traffic Generator */
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .traffic-log {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 400px;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border: 1px solid var(--border);
+        }
+
         /* Cards */
         .card {
             background: var(--bg-secondary);
@@ -412,6 +437,44 @@
                         <div style="font-size: 0.75rem; color: var(--text-secondary);" id="riskText">Calculating...</div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Traffic Generator Panel -->
+        <div class="card" id="trafficPanel">
+            <div class="card-title">
+                <span>🚦</span> Traffic Generator
+                <span id="trafficStatusBadge" class="badge badge-low" style="margin-left: auto;">Idle</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                <button class="btn btn-secondary" onclick="startTraffic('web')">
+                    <span>🌐</span> Web
+                </button>
+                <button class="btn btn-secondary" onclick="startTraffic('ssh')">
+                    <span>🔑</span> SSH
+                </button>
+                <button class="btn btn-secondary" onclick="startTraffic('db')">
+                    <span>🗄️</span> Database
+                </button>
+                <button class="btn btn-secondary" onclick="startTraffic('mixed')">
+                    <span>⚡</span> Mixed
+                </button>
+                <button class="btn btn-primary" onclick="startTraffic('all')">
+                    <span>🚀</span> All Scenarios
+                </button>
+                <button class="btn btn-primary" onclick="startTraffic('loop')">
+                    <span>🔁</span> Start Loop
+                </button>
+                <button class="btn btn-danger" onclick="stopTraffic()" id="stopBtn" disabled>
+                    <span>⏹️</span> Stop
+                </button>
+            </div>
+            <div id="trafficOutputWrap" style="display: none;">
+                <div class="traffic-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-size: 0.875rem; color: var(--text-secondary);">Live Output</span>
+                    <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="clearTrafficOutput()">Clear</button>
+                </div>
+                <pre id="trafficOutput" class="traffic-log"></pre>
             </div>
         </div>
 
@@ -778,6 +841,86 @@
                     </div>
                 `;
             });
+        }
+
+        // ---------------------------------------------------------------------------
+        // Traffic Generator
+        // ---------------------------------------------------------------------------
+        let trafficStatusInterval = null;
+
+        async function startTraffic(scenario) {
+            try {
+                const response = await fetch(`/api/traffic/${scenario}`, { method: 'POST' });
+                const data = await response.json();
+                if (!response.ok) {
+                    alert(data.message || 'Failed to start traffic');
+                    return;
+                }
+                // Show output panel
+                document.getElementById('trafficOutputWrap').style.display = 'block';
+                updateTrafficUI(true, scenario);
+                // Start polling status
+                if (!trafficStatusInterval) {
+                    trafficStatusInterval = setInterval(pollTrafficStatus, 2000);
+                }
+                pollTrafficStatus();
+            } catch (error) {
+                console.error('Error starting traffic:', error);
+                alert('Error starting traffic generation');
+            }
+        }
+
+        async function stopTraffic() {
+            try {
+                const response = await fetch('/api/traffic/stop', { method: 'POST' });
+                const data = await response.json();
+                updateTrafficUI(false);
+                if (trafficStatusInterval) {
+                    clearInterval(trafficStatusInterval);
+                    trafficStatusInterval = null;
+                }
+            } catch (error) {
+                console.error('Error stopping traffic:', error);
+                alert('Error stopping traffic generation');
+            }
+        }
+
+        async function pollTrafficStatus() {
+            try {
+                const response = await fetch('/api/traffic/status');
+                const data = await response.json();
+                const running = data.running;
+                updateTrafficUI(running, data.scenario);
+                const outputEl = document.getElementById('trafficOutput');
+                if (data.output && data.output.length > 0) {
+                    outputEl.textContent = data.output.join('\n');
+                    outputEl.scrollTop = outputEl.scrollHeight;
+                }
+                if (!running && trafficStatusInterval) {
+                    clearInterval(trafficStatusInterval);
+                    trafficStatusInterval = null;
+                }
+            } catch (error) {
+                console.error('Error polling traffic status:', error);
+            }
+        }
+
+        function updateTrafficUI(running, scenario) {
+            const badge = document.getElementById('trafficStatusBadge');
+            const stopBtn = document.getElementById('stopBtn');
+            if (running) {
+                badge.textContent = scenario ? `Running: ${scenario}` : 'Running';
+                badge.className = 'badge badge-medium';
+                stopBtn.disabled = false;
+            } else {
+                badge.textContent = 'Idle';
+                badge.className = 'badge badge-low';
+                stopBtn.disabled = true;
+            }
+        }
+
+        function clearTrafficOutput() {
+            document.getElementById('trafficOutput').textContent = '';
         }
 
         // Load data on page load

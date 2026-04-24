@@ -6,8 +6,9 @@ import os
 import json
 import time
 import threading
+import subprocess
 from datetime import datetime
-from flask import Flask, render_template, jsonify, send_from_directory
+from flask import Flask, render_template, jsonify, send_from_directory, request
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from cbom_generator import CBOMGenerator
@@ -129,6 +130,93 @@ def api_refresh():
 def download_cbom():
     """Download CBOM JSON file"""
     return send_from_directory(CBOM_PATH, "cbom.json", as_attachment=True)
+
+# ---------------------------------------------------------------------------
+# Traffic Generator State
+# ---------------------------------------------------------------------------
+traffic_process = None
+traffic_output = []
+traffic_lock = threading.Lock()
+
+def run_traffic_scenario(scenario):
+    """Run generate-traffic.sh in a subprocess and capture output"""
+    global traffic_process, traffic_output
+    script_path = "/app/generate-traffic.sh"
+    if not os.path.exists(script_path):
+        script_path = os.path.join(os.path.dirname(__file__), "..", "generate-traffic.sh")
+
+    with traffic_lock:
+        traffic_output = []
+        traffic_process = subprocess.Popen(
+            ["/bin/bash", script_path, scenario],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+            universal_newlines=True,
+        )
+
+    # Read output in background thread
+    def _read_output():
+        global traffic_output
+        if traffic_process and traffic_process.stdout:
+            for line in traffic_process.stdout:
+                with traffic_lock:
+                    traffic_output.append(line.rstrip())
+                    # Keep last 500 lines
+                    if len(traffic_output) > 500:
+                        traffic_output = traffic_output[-500:]
+        with traffic_lock:
+            if traffic_process:
+                traffic_process.wait()
+
+    threading.Thread(target=_read_output, daemon=True).start()
+
+@app.route("/api/traffic/<scenario>", methods=["POST"])
+def api_traffic_run(scenario):
+    """Run a traffic scenario: web, ssh, db, mixed, all, loop"""
+    global traffic_process
+    valid_scenarios = {"web", "ssh", "db", "mixed", "all", "loop"}
+    if scenario not in valid_scenarios:
+        return jsonify({"status": "error", "message": f"Invalid scenario. Choose from: {', '.join(valid_scenarios)}"}), 400
+
+    with traffic_lock:
+        if traffic_process and traffic_process.poll() is None:
+            return jsonify({"status": "error", "message": "Traffic generation already running"}), 409
+
+    run_traffic_scenario(scenario)
+    return jsonify({"status": "ok", "scenario": scenario, "message": f"Started {scenario} traffic generation"})
+
+@app.route("/api/traffic/status", methods=["GET"])
+def api_traffic_status():
+    """Get traffic generation status and recent output"""
+    with traffic_lock:
+        running = traffic_process is not None and traffic_process.poll() is None
+        scenario = None
+        if traffic_process and isinstance(traffic_process.args, (list, tuple)) and len(traffic_process.args) > 2:
+            scenario = traffic_process.args[2]
+        return jsonify({
+            "status": "ok",
+            "running": running,
+            "scenario": scenario,
+            "output": traffic_output[-100:],  # Last 100 lines
+        })
+
+@app.route("/api/traffic/stop", methods=["POST"])
+def api_traffic_stop():
+    """Stop active traffic generation"""
+    global traffic_process
+    with traffic_lock:
+        if traffic_process and traffic_process.poll() is None:
+            traffic_process.terminate()
+            try:
+                traffic_process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                traffic_process.kill()
+                traffic_process.wait()
+            traffic_process = None
+            return jsonify({"status": "ok", "message": "Traffic generation stopped"})
+        return jsonify({"status": "ok", "message": "No traffic generation was running"})
 
 @app.template_filter('datetime')
 def format_datetime(value):

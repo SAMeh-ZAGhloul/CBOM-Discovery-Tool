@@ -24,12 +24,13 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-WEB_APP_URL="https://localhost:8443"
-SSH_HOST="localhost"
+TRAFFIC_HOST="${TRAFFIC_HOST:-localhost}"
+WEB_APP_URL="https://${TRAFFIC_HOST}:8443"
+SSH_HOST="${TRAFFIC_HOST}"
 SSH_PORT="2222"
 SSH_USER="cbomuser"
 SSH_PASS="cbom_demo_2024!"
-DB_HOST="localhost"
+DB_HOST="${TRAFFIC_HOST}"
 DB_PORT="5432"
 DB_USER="postgres"
 DB_PASS="cbom_demo_pass"

@@ -38,11 +38,15 @@ services:
     volumes:
       - ./shared/logs:/app/logs:ro
       - ./shared/cbom:/app/cbom
+      - ./generate-traffic.sh:/app/generate-traffic.sh:ro
     environment:
       - FLASK_ENV=development
       - FLASK_PORT=5000
       - LOG_PATH=/app/logs
       - CBOM_PATH=/app/cbom
+      - TRAFFIC_HOST=host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - zeek
     restart: unless-stopped
