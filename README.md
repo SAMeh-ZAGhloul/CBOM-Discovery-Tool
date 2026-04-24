@@ -262,7 +262,7 @@ Generated CBOM follows this structure:
 ## Analyzer Features
 
 ### Integrated Traffic Generator
-The dashboard includes built-in controls to generate traffic against the sample applications without leaving your browser. Click any scenario button (Web, SSH, Database, Mixed, All, or Loop) and watch live output stream in the panel.
+The dashboard includes built-in controls to generate traffic against the sample applications without leaving your browser. Click any scenario button (Web, SSH, Database, Mixed, All, or Loop) and watch live output stream in the panel. A **Clear CBOM** button is also available to reset all discovered cryptographic assets, certificates, and findings.
 
 ### Auto-Regeneration
 The analyzer uses `watchdog` to monitor the shared logs directory. CBOM is automatically regenerated when:
@@ -352,6 +352,7 @@ Runs all scenarios continuously with a 10-second delay between iterations. Press
 | `/api/traffic/<scenario>` | POST | Run traffic scenario (`web`, `ssh`, `db`, `mixed`, `all`, `loop`) |
 | `/api/traffic/status` | GET | Traffic generator status and live output |
 | `/api/traffic/stop` | POST | Stop active traffic generation |
+| `/api/cbom/clear` | POST | Clear CBOM data (reset to empty) |
 
 ## Troubleshooting
 

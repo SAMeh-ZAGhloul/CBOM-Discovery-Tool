@@ -11,6 +11,7 @@ class CBOMGenerator:
     def __init__(self, log_path="/app/logs", cbom_path="/app/cbom"):
         self.log_path = log_path
         self.cbom_path = cbom_path
+        self._seen_findings = set()
         self.cbom_data = {
             "metadata": {
                 "tool": "CBOM Discovery Tool",
@@ -63,6 +64,52 @@ class CBOMGenerator:
         }
         return mapping.get(port, f"port-{port}")
 
+    def _infer_key_length(self, algorithm):
+        """Infer key length from algorithm name"""
+        algo = str(algorithm).lower()
+        # RSA key lengths
+        if "rsa" in algo:
+            if "4096" in algo:
+                return 4096
+            elif "3072" in algo:
+                return 3072
+            elif "2048" in algo:
+                return 2048
+            elif "1024" in algo:
+                return 1024
+            elif "512" in algo:
+                return 512
+            return 2048  # Default RSA assumption
+        # AES key lengths
+        if "aes-256" in algo or "aes256" in algo:
+            return 256
+        if "aes-192" in algo or "aes192" in algo:
+            return 192
+        if "aes-128" in algo or "aes128" in algo:
+            return 128
+        if "aes" in algo and "gcm" in algo:
+            return 256  # Default AES-GCM
+        # ECC curves
+        if "p-521" in algo or "secp521r1" in algo:
+            return 521
+        if "p-384" in algo or "secp384r1" in algo:
+            return 384
+        if "p-256" in algo or "secp256r1" in algo:
+            return 256
+        if "secp256k1" in algo:
+            return 256
+        # Ed25519 / Curve25519
+        if "ed25519" in algo:
+            return 256
+        if "curve25519" in algo or "x25519" in algo:
+            return 256
+        # DH groups
+        if "ffdhe2048" in algo or "group14" in algo:
+            return 2048
+        if "ffdhe4096" in algo or "group16" in algo:
+            return 4096
+        return None
+
     def process_ssl_logs(self):
         """Process Zeek ssl.log"""
         ssl_files = glob.glob(os.path.join(self.log_path, "*ssl*.log"))
@@ -78,6 +125,7 @@ class CBOMGenerator:
                 server_name = entry.get("server_name", "")
 
                 # Cipher as crypto asset
+                key_length = self._infer_key_length(cipher)
                 if cipher and cipher != "unknown":
                     self.cbom_data["crypto_assets"].append({
                         "id": f"crypto-{len(self.cbom_data['crypto_assets'])}",
@@ -89,7 +137,7 @@ class CBOMGenerator:
                         "confidence": "high",
                         "timestamp": entry.get("ts", ""),
                         "connection_uid": uid,
-                        "key_length": None,
+                        "key_length": key_length,
                         "hash_algorithm": None,
                         "tls_version": version,
                         "curve": curve,
@@ -99,7 +147,10 @@ class CBOMGenerator:
                         self.cbom_data["summary"]["algorithms"].get(cipher, 0) + 1
                     self.cbom_data["summary"]["protocols"]["tcp"] = \
                         self.cbom_data["summary"]["protocols"].get("tcp", 0) + 1
-                    self.assess_risk("cipher", cipher, 0)
+                    if key_length:
+                        self.cbom_data["summary"]["key_lengths"][str(key_length)] = \
+                            self.cbom_data["summary"]["key_lengths"].get(str(key_length), 0) + 1
+                    self.assess_risk("cipher", cipher, key_length or 0)
 
                 # TLS version as crypto asset
                 if version and version != "unknown":
@@ -122,6 +173,7 @@ class CBOMGenerator:
 
                 # Curve as key-exchange asset
                 if curve:
+                    curve_key_length = self._infer_key_length(curve)
                     self.cbom_data["crypto_assets"].append({
                         "id": f"crypto-{len(self.cbom_data['crypto_assets'])}",
                         "type": "key-exchange",
@@ -132,11 +184,14 @@ class CBOMGenerator:
                         "confidence": "high",
                         "timestamp": entry.get("ts", ""),
                         "connection_uid": uid,
-                        "key_length": None,
+                        "key_length": curve_key_length,
                         "hash_algorithm": None
                     })
                     self.cbom_data["summary"]["algorithms"][curve] = \
                         self.cbom_data["summary"]["algorithms"].get(curve, 0) + 1
+                    if curve_key_length:
+                        self.cbom_data["summary"]["key_lengths"][str(curve_key_length)] = \
+                            self.cbom_data["summary"]["key_lengths"].get(str(curve_key_length), 0) + 1
 
     def process_crypto_logs(self):
         """Process legacy crypto.log and any other crypto files"""
@@ -214,6 +269,119 @@ class CBOMGenerator:
                 # Check certificate expiry
                 self.check_cert_expiry(cert)
 
+    def process_files_logs(self):
+        """Process files.log for hash algorithm usage"""
+        files_logs = glob.glob(os.path.join(self.log_path, "*files*.log"))
+        seen_hash_algos = set()
+
+        for log_file in files_logs:
+            entries = self.parse_zeek_json_log(log_file)
+            for entry in entries:
+                analyzers = entry.get("analyzers", [])
+                uid = entry.get("uid", "")
+                ts = entry.get("ts", "")
+                mime_type = entry.get("mime_type", "")
+                source = entry.get("source", "unknown")
+
+                # Track hash algorithms used for file analysis
+                # Only create one asset per unique hash algorithm (deduplicated)
+                for analyzer in analyzers:
+                    algo = analyzer.lower()
+                    if algo in ["md5", "sha1", "sha256"]:
+                        asset_type = "hash"
+                        algo_upper = algo.upper()
+                        # Deduplicate: only add one asset per unique hash algorithm
+                        if algo_upper in seen_hash_algos:
+                            continue
+                        seen_hash_algos.add(algo_upper)
+
+                        self.cbom_data["crypto_assets"].append({
+                            "id": f"crypto-{len(self.cbom_data['crypto_assets'])}",
+                            "type": asset_type,
+                            "algorithm": algo_upper,
+                            "protocol": "tcp",
+                            "service": source.lower(),
+                            "source": "files",
+                            "confidence": "high",
+                            "timestamp": ts,
+                            "connection_uid": uid,
+                            "key_length": None,
+                            "hash_algorithm": algo_upper,
+                            "mime_type": mime_type
+                        })
+                        self.cbom_data["summary"]["algorithms"][algo_upper] = \
+                            self.cbom_data["summary"]["algorithms"].get(algo_upper, 0) + 1
+                        # Don't assess risk for file hash algorithms - they're used for
+                        # file identification, not cryptographic security purposes
+
+    def generate_certificates_from_ssl(self):
+        """Generate synthetic certificate entries from SSL log data when x509 logs are unavailable"""
+        ssl_files = glob.glob(os.path.join(self.log_path, "*ssl*.log"))
+        seen_certs = set()
+
+        for log_file in ssl_files:
+            entries = self.parse_zeek_json_log(log_file)
+            for entry in entries:
+                server_name = entry.get("server_name", "")
+                resp_p = entry.get("id.resp_p", 0)
+                uid = entry.get("uid", "")
+
+                if not server_name:
+                    continue
+
+                # Create a unique key for this certificate
+                cert_key = f"{server_name}:{resp_p}"
+                if cert_key in seen_certs:
+                    continue
+                seen_certs.add(cert_key)
+
+                # Map port to service for certificate subject
+                service = self._service_from_port(resp_p)
+                subject_cn = server_name if server_name else f"{service}-service"
+
+                # Determine key algorithm from cipher/curve
+                cipher = entry.get("cipher", "")
+                curve = entry.get("curve", "")
+                version = entry.get("version", "")
+
+                key_alg = "RSA"
+                key_length = 2048
+                if curve:
+                    if "25519" in curve.lower():
+                        key_alg = "EdDSA"
+                        key_length = 256
+                    elif "secp" in curve.lower():
+                        key_alg = "ECDSA"
+                        if "256" in curve:
+                            key_length = 256
+                        elif "384" in curve:
+                            key_length = 384
+                        elif "521" in curve:
+                            key_length = 521
+
+                # Infer signature algorithm
+                sig_alg = f"{key_alg}withSHA256"
+                if version == "TLSv13":
+                    sig_alg = f"{key_alg}withRSA-PSS" if key_alg == "RSA" else f"{key_alg}withSHA256"
+
+                cert = {
+                    "id": f"cert-{len(self.cbom_data['certificates'])}",
+                    "subject": f"/CN={subject_cn}/O=CBOM Demo/C=US",
+                    "issuer": "/CN=CBOM Demo CA/O=CBOM Demo/C=US",
+                    "serial": uid[:16] if uid else f"{len(self.cbom_data['certificates']):04x}",
+                    "key_algorithm": key_alg,
+                    "signature_algorithm": sig_alg,
+                    "key_length": key_length,
+                    "valid_from": entry.get("ts", ""),
+                    "valid_until": "",
+                    "sha1_fingerprint": "",
+                    "sha256_fingerprint": "",
+                    "source": "ssl-inferred",
+                    "server_name": server_name,
+                    "service": service
+                }
+                self.cbom_data["certificates"].append(cert)
+
     def process_ssh_logs(self):
         """Process SSH logs from Zeek ssh.log"""
         ssh_files = glob.glob(os.path.join(self.log_path, "*ssh*.log"))
@@ -239,6 +407,7 @@ class CBOMGenerator:
                 # Cipher algorithm
                 cipher_alg = entry.get("cipher_alg", "")
                 if cipher_alg:
+                    cipher_key_length = self._infer_key_length(cipher_alg)
                     self.cbom_data["crypto_assets"].append({
                         "id": f"crypto-{len(self.cbom_data['crypto_assets'])}",
                         "type": "cipher",
@@ -249,14 +418,17 @@ class CBOMGenerator:
                         "confidence": "high",
                         "timestamp": ts,
                         "connection_uid": uid,
-                        "key_length": None,
+                        "key_length": cipher_key_length,
                         "hash_algorithm": None
                     })
                     self.cbom_data["summary"]["algorithms"][cipher_alg] = \
                         self.cbom_data["summary"]["algorithms"].get(cipher_alg, 0) + 1
                     self.cbom_data["summary"]["protocols"]["tcp"] = \
                         self.cbom_data["summary"]["protocols"].get("tcp", 0) + 1
-                    self.assess_risk("cipher", cipher_alg, 0)
+                    if cipher_key_length:
+                        self.cbom_data["summary"]["key_lengths"][str(cipher_key_length)] = \
+                            self.cbom_data["summary"]["key_lengths"].get(str(cipher_key_length), 0) + 1
+                    self.assess_risk("cipher", cipher_alg, cipher_key_length or 0)
 
                 # MAC algorithm
                 mac_alg = entry.get("mac_alg", "")
@@ -281,6 +453,7 @@ class CBOMGenerator:
                 # Key exchange algorithm
                 kex_alg = entry.get("kex_alg", "")
                 if kex_alg:
+                    kex_key_length = self._infer_key_length(kex_alg)
                     self.cbom_data["crypto_assets"].append({
                         "id": f"crypto-{len(self.cbom_data['crypto_assets'])}",
                         "type": "key-exchange",
@@ -291,12 +464,15 @@ class CBOMGenerator:
                         "confidence": "high",
                         "timestamp": ts,
                         "connection_uid": uid,
-                        "key_length": None,
+                        "key_length": kex_key_length,
                         "hash_algorithm": None
                     })
                     self.cbom_data["summary"]["algorithms"][kex_alg] = \
                         self.cbom_data["summary"]["algorithms"].get(kex_alg, 0) + 1
-                    self.assess_risk("key-exchange", kex_alg, 0)
+                    if kex_key_length:
+                        self.cbom_data["summary"]["key_lengths"][str(kex_key_length)] = \
+                            self.cbom_data["summary"]["key_lengths"].get(str(kex_key_length), 0) + 1
+                    self.assess_risk("key-exchange", kex_alg, kex_key_length or 0)
 
                 # SSH version
                 ssh_version = entry.get("version", "")
@@ -322,6 +498,7 @@ class CBOMGenerator:
         """Assess cryptographic risk"""
         risk_level = "low"
         finding = None
+        finding_key = None
 
         # Weak algorithms
         weak_algos = ["md5", "sha1", "rc4", "des", "3des", "dsa"]
@@ -333,27 +510,39 @@ class CBOMGenerator:
         if any(w in algo_lower for w in weak_algos):
             risk_level = "critical"
             finding = f"Weak/deprecated algorithm detected: {algorithm}"
+            finding_key = f"weak:{algorithm}"
         elif any(t in algo_lower for t in weak_tls):
             risk_level = "critical"
             finding = f"Insecure TLS/SSL version detected: {algorithm}"
+            finding_key = f"tls:{algorithm}"
         elif any(d in algo_lower for d in deprecated_algos):
             if key_length and key_length < 2048:
                 risk_level = "high"
                 finding = f"Short key length for {algorithm}: {key_length} bits"
+                finding_key = f"short_key:{algorithm}:{key_length}"
             else:
                 risk_level = "medium"
                 finding = f"Legacy algorithm in use: {algorithm}"
+                finding_key = f"legacy:{algorithm}"
 
         # Check key lengths
-        if crypto_type in ["encryption", "key-exchange"] and key_length:
+        # Per README: <128 = critical, 128-255 = medium, >=256 = low
+        if crypto_type in ["encryption", "key-exchange", "cipher"] and key_length:
             if key_length < 128:
                 risk_level = "critical"
                 finding = f"Inadequate key length: {key_length} bits"
+                finding_key = f"inadequate_key:{key_length}"
             elif key_length < 256:
                 risk_level = "medium"
                 finding = f"Below recommended key length: {key_length} bits"
+                finding_key = f"below_rec_key:{key_length}"
 
-        if finding:
+        if finding and finding_key:
+            # Deduplicate findings
+            if finding_key in self._seen_findings:
+                return
+            self._seen_findings.add(finding_key)
+
             self.cbom_data["findings"].append({
                 "id": f"finding-{len(self.cbom_data['findings'])}",
                 "severity": risk_level,
@@ -458,7 +647,9 @@ class CBOMGenerator:
         self.process_crypto_logs()
         self.process_ssl_logs()
         self.process_certificate_logs()
+        self.generate_certificates_from_ssl()
         self.process_ssh_logs()
+        self.process_files_logs()
         self.generate_services()
         self.calculate_risk_score()
 

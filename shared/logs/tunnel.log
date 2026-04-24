@@ -1,1 +1,1 @@
-{"ts":"2026-04-24T11:41:31.059086Z","id.orig_h":"192.168.65.3","id.orig_p":0,"id.resp_h":"192.168.65.1","id.resp_p":3128,"tunnel_type":"Tunnel::HTTP","action":"Tunnel::DISCOVER"}
+{"ts":"2026-04-24T12:12:15.492884Z","id.orig_h":"192.168.65.3","id.orig_p":0,"id.resp_h":"192.168.65.1","id.resp_p":3128,"tunnel_type":"Tunnel::HTTP","action":"Tunnel::DISCOVER"}

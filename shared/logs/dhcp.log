@@ -1,0 +1,1 @@
+{"ts":"2026-04-24T12:09:56.104868Z","uids":["CfUSsQD4JZxry5TK4","CL6Jcw1NAbWvZmQ0Cl"],"client_addr":"192.168.65.3","server_addr":"192.168.65.1","mac":"c2:12:a1:ba:29:bf","requested_addr":"192.168.65.3","assigned_addr":"192.168.65.3","lease_time":3600.0,"msg_types":["DISCOVER","OFFER","REQUEST","ACK"],"duration":0.008630037307739258}

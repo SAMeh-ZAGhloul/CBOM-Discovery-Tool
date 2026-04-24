@@ -218,6 +218,47 @@ def api_traffic_stop():
             return jsonify({"status": "ok", "message": "Traffic generation stopped"})
         return jsonify({"status": "ok", "message": "No traffic generation was running"})
 
+@app.route("/api/cbom/clear", methods=["POST"])
+def api_cbom_clear():
+    """Clear the CBOM by resetting cbom_data and writing an empty CBOM file"""
+    global cbom_data, last_update
+    try:
+        empty_cbom = {
+            "metadata": {
+                "tool": "CBOM Discovery Tool",
+                "version": "1.0.0",
+                "generated_at": datetime.utcnow().isoformat() + "Z",
+                "format": "CBOM-1.0"
+            },
+            "summary": {
+                "total_crypto_assets": 0,
+                "total_services": 0,
+                "total_findings": 0,
+                "total_certificates": 0,
+                "total_keys": 0,
+                "risk_score": 0,
+                "protocols": {},
+                "algorithms": {},
+                "key_lengths": {}
+            },
+            "crypto_assets": [],
+            "certificates": [],
+            "keys": [],
+            "services": [],
+            "findings": []
+        }
+        cbom_data = empty_cbom
+        last_update = datetime.utcnow().isoformat() + "Z"
+
+        cbom_file = os.path.join(CBOM_PATH, "cbom.json")
+        os.makedirs(CBOM_PATH, exist_ok=True)
+        with open(cbom_file, "w") as f:
+            json.dump(empty_cbom, f, indent=2)
+
+        return jsonify({"status": "ok", "message": "CBOM cleared successfully"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 @app.template_filter('datetime')
 def format_datetime(value):
     """Format ISO datetime for display"""
