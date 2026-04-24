@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # ZEEK NETWORK MONITOR
+  # ==========================================
+  zeek:
+    build: ./zeek
+    container_name: zeek-monitor
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    network_mode: host
+    volumes:
+      - ./shared/logs:/zeek/logs
+      - ./zeek/scripts:/zeek/scripts:ro
+    command: >
+      sh -c "echo 'Starting Zeek on eth0...' && 
+      (zeek -i eth0 local /zeek/scripts/crypto-detection.zeek || 
+       zeek -i any local /zeek/scripts/crypto-detection.zeek || 
+       echo 'Interface not found, running in standalone mode')"
+    restart: unless-stopped
+    depends_on:
+      - web-app
+      - ssh-service
+      - database-service
+
+  # ==========================================
+  # PYTHON CBOM ANALYZER & DASHBOARD
+  # ==========================================
+  analyzer:
+    build: ./analyzer
+    container_name: cbom-analyzer
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./shared/logs:/app/logs:ro
+      - ./shared/cbom:/app/cbom
+    environment:
+      - FLASK_ENV=development
+      - FLASK_PORT=5000
+      - LOG_PATH=/app/logs
+      - CBOM_PATH=/app/cbom
+    depends_on:
+      - zeek
+    restart: unless-stopped
+
+  # ==========================================
+  # SAMPLE APP 1: HTTPS WEB APPLICATION
+  # ==========================================
+  web-app:
+    build: ./sample-apps/web-app
+    container_name: sample-web-app
+    ports:
+      - "8443:8443"
+    networks:
+      - cbom-net
+    restart: unless-stopped
+
+  # ==========================================
+  # SAMPLE APP 2: SSH SERVICE
+  # ==========================================
+  ssh-service:
+    build: ./sample-apps/ssh-service
+    container_name: sample-ssh-service
+    ports:
+      - "2222:22"
+    networks:
+      - cbom-net
+    restart: unless-stopped
+
+  # ==========================================
+  # SAMPLE APP 3: TLS-ENABLED DATABASE
+  # ==========================================
+  database-service:
+    build: ./sample-apps/database-service
+    container_name: sample-database-service
+    ports:
+      - "5432:5432"
+      - "6432:6432"
+    networks:
+      - cbom-net
+    environment:
+      - POSTGRES_PASSWORD=cbom_demo_pass
+      - POSTGRES_DB=crypto_inventory
+    restart: unless-stopped
+
+networks:
+  cbom-net:
+    driver: bridge

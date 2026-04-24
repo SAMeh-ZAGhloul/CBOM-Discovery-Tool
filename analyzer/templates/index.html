@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBOM Discovery Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --critical: #dc2626;
+            --border: #475569;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header h1::before {
+            content: "🔐";
+            font-size: 1.75rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .last-update {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-value.critical { color: var(--critical); }
+        .stat-value.high { color: var(--danger); }
+        .stat-value.medium { color: var(--warning); }
+        .stat-value.low { color: var(--success); }
+
+        /* Risk Score */
+        .risk-score-container {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .risk-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            border: 4px solid;
+        }
+
+        .risk-ring.critical { border-color: var(--critical); color: var(--critical); }
+        .risk-ring.high { border-color: var(--danger); color: var(--danger); }
+        .risk-ring.medium { border-color: var(--warning); color: var(--warning); }
+        .risk-ring.low { border-color: var(--success); color: var(--success); }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-secondary);
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: var(--bg-card);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .data-table tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .data-table td {
+            font-size: 0.875rem;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-critical { background: rgba(220, 38, 38, 0.2); color: #fca5a5; }
+        .badge-high { background: rgba(239, 68, 68, 0.2); color: #fecaca; }
+        .badge-medium { background: rgba(245, 158, 11, 0.2); color: #fde68a; }
+        .badge-low { background: rgba(16, 185, 129, 0.2); color: #a7f3d0; }
+        .badge-info { background: rgba(59, 130, 246, 0.2); color: #bfdbfe; }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Charts placeholder */
+        .chart-container {
+            height: 300px;
+            background: var(--bg-primary);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.75rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .data-table {
+                font-size: 0.75rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--bg-card);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>CBOM Discovery Dashboard</h1>
+        <div class="header-actions">
+            <span class="last-update" id="lastUpdate">Loading...</span>
+            <button class="btn btn-secondary" onclick="refreshData()">
+                <span>🔄</span> Refresh
+            </button>
+            <a href="/download/cbom" class="btn btn-primary">
+                <span>⬇️</span> Export CBOM
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Stats Overview -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-label">Total Crypto Assets</div>
+                <div class="stat-value" id="statAssets">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Services Discovered</div>
+                <div class="stat-value" id="statServices">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Certificates</div>
+                <div class="stat-value" id="statCerts">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Keys Detected</div>
+                <div class="stat-value" id="statKeys">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Risk Findings</div>
+                <div class="stat-value" id="statFindings">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Risk Score</div>
+                <div class="risk-score-container">
+                    <div class="risk-ring" id="riskRing">-</div>
+                    <div>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">Out of 100</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);" id="riskText">Calculating...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('findings')">⚠️ Findings</button>
+            <button class="tab" onclick="switchTab('assets')">🔑 Crypto Assets</button>
+            <button class="tab" onclick="switchTab('certificates')">📜 Certificates</button>
+            <button class="tab" onclick="switchTab('services')">🖥️ Services</button>
+            <button class="tab" onclick="switchTab('raw')">📄 Raw CBOM</button>
+        </div>
+
+        <!-- Findings Tab -->
+        <div id="tab-findings" class="tab-content active">
+            <div class="card">
+                <div class="card-title">Security Findings</div>
+                <div id="findingsContent">
+                    <div class="loading"><div class="spinner"></div>Loading findings...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assets Tab -->
+        <div id="tab-assets" class="tab-content">
+            <div class="card">
+                <div class="card-title">Cryptographic Assets</div>
+                <div id="assetsContent">
+                    <div class="loading"><div class="spinner"></div>Loading assets...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificates Tab -->
+        <div id="tab-certificates" class="tab-content">
+            <div class="card">
+                <div class="card-title">X.509 Certificates</div>
+                <div id="certificatesContent">
+                    <div class="loading"><div class="spinner"></div>Loading certificates...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Tab -->
+        <div id="tab-services" class="tab-content">
+            <div class="card">
+                <div class="card-title">Discovered Services</div>
+                <div id="servicesContent">
+                    <div class="loading"><div class="spinner"></div>Loading services...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Raw CBOM Tab -->
+        <div id="tab-raw" class="tab-content">
+            <div class="card">
+                <div class="card-title">Raw CBOM JSON</div>
+                <pre id="rawContent" style="background: var(--bg-primary); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.75rem;"><div class="loading"><div class="spinner"></div>Loading...</div></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cbomData = null;
+
+        async function loadData() {
+            try {
+                const response = await fetch('/api/cbom');
+                cbomData = await response.json();
+                updateDashboard();
+            } catch (error) {
+                console.error('Error loading CBOM:', error);
+                showError('Failed to load CBOM data');
+            }
+        }
+
+        function updateDashboard() {
+            if (!cbomData || !cbomData.summary) {
+                showError('No CBOM data available');
+                return;
+            }
+
+            const summary = cbomData.summary;
+
+            // Update stats
+            document.getElementById('statAssets').textContent = summary.total_crypto_assets || 0;
+            document.getElementById('statServices').textContent = summary.total_services || 0;
+            document.getElementById('statCerts').textContent = summary.total_certificates || 0;
+            document.getElementById('statKeys').textContent = summary.total_keys || 0;
+            document.getElementById('statFindings').textContent = summary.total_findings || 0;
+
+            // Risk score
+            const riskScore = summary.risk_score || 0;
+            const riskRing = document.getElementById('riskRing');
+            const riskText = document.getElementById('riskText');
+            riskRing.textContent = riskScore;
+            riskRing.className = 'risk-ring ' + getRiskClass(riskScore);
+            riskText.textContent = getRiskLabel(riskScore);
+
+            // Update last update time
+            document.getElementById('lastUpdate').textContent = 'Last updated: ' + 
+                new Date().toLocaleTimeString();
+
+            // Update findings
+            updateFindings();
+
+            // Update assets
+            updateAssets();
+
+            // Update certificates
+            updateCertificates();
+
+            // Update services
+            updateServices();
+
+            // Update raw
+            document.getElementById('rawContent').textContent = JSON.stringify(cbomData, null, 2);
+        }
+
+        function getRiskClass(score) {
+            if (score >= 75) return 'critical';
+            if (score >= 50) return 'high';
+            if (score >= 25) return 'medium';
+            return 'low';
+        }
+
+        function getRiskLabel(score) {
+            if (score >= 75) return 'Critical Risk';
+            if (score >= 50) return 'High Risk';
+            if (score >= 25) return 'Medium Risk';
+            return 'Low Risk';
+        }
+
+        function updateFindings() {
+            const findings = cbomData.findings || [];
+            const container = document.getElementById('findingsContent');
+
+            if (findings.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <h3>No Findings</h3>
+                        <p>No cryptographic risks detected. Great job!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Severity</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Algorithm</th>
+                            <th>Recommendation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            findings.forEach(finding => {
+                html += `
+                    <tr>
+                        <td><span class="badge badge-${finding.severity}">${finding.severity}</span></td>
+                        <td>${finding.type}</td>
+                        <td>${finding.description}</td>
+                        <td>${finding.algorithm || '-'}</td>
+                        <td>${finding.recommendation}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function updateAssets() {
+            const assets = cbomData.crypto_assets || [];
+            const container = document.getElementById('assetsContent');
+
+            if (assets.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <h3>No Assets Found</h3>
+                        <p>Waiting for Zeek to discover cryptographic assets...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Algorithm</th>
+                            <th>Protocol</th>
+                            <th>Service</th>
+                            <th>Source</th>
+                            <th>Confidence</th>
+                            <th>Key Length</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            assets.forEach(asset => {
+                html += `
+                    <tr>
+                        <td><span class="badge badge-info">${asset.type}</span></td>
+                        <td><code>${asset.algorithm}</code></td>
+                        <td>${asset.protocol}</td>
+                        <td>${asset.service}</td>
+                        <td>${asset.source}</td>
+                        <td><span class="badge badge-${asset.confidence === 'high' ? 'low' : 'medium'}">${asset.confidence}</span></td>
+                        <td>${asset.key_length || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function updateCertificates() {
+            const certs = cbomData.certificates || [];
+            const container = document.getElementById('certificatesContent');
+
+            if (certs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📜</div>
+                        <h3>No Certificates</h3>
+                        <p>No X.509 certificates discovered yet...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Issuer</th>
+                            <th>Key Algorithm</th>
+                            <th>Key Length</th>
+                            <th>Valid From</th>
+                            <th>Valid Until</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            certs.forEach(cert => {
+                html += `
+                    <tr>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${cert.subject}</td>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${cert.issuer}</td>
+                        <td>${cert.key_algorithm}</td>
+                        <td>${cert.key_length}</td>
+                        <td>${formatDate(cert.valid_from)}</td>
+                        <td>${formatDate(cert.valid_until)}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function updateServices() {
+            const services = cbomData.services || [];
+            const container = document.getElementById('servicesContent');
+
+            if (services.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🖥️</div>
+                        <h3>No Services</h3>
+                        <p>No services with cryptographic activity discovered...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Protocols</th>
+                            <th>Algorithms</th>
+                            <th>Asset Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            services.forEach(svc => {
+                html += `
+                    <tr>
+                        <td><strong>${svc.name}</strong></td>
+                        <td>${svc.protocols.join(', ')}</td>
+                        <td>${svc.algorithms.slice(0, 5).join(', ')}${svc.algorithms.length > 5 ? '...' : ''}</td>
+                        <td>${svc.asset_count}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                return new Date(dateStr).toLocaleDateString();
+            } catch {
+                return dateStr;
+            }
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        async function refreshData() {
+            const btn = event.target.closest('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>⏳</span> Refreshing...';
+            btn.disabled = true;
+
+            try {
+                await fetch('/api/refresh', { method: 'POST' });
+                await loadData();
+            } catch (error) {
+                console.error('Error refreshing:', error);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function showError(message) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <h3>Error</h3>
+                        <p>${message}</p>
+                    </div>
+                `;
+            });
+        }
+
+        // Load data on page load
+        loadData();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>

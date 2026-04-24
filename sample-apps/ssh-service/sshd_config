@@ -1,0 +1,30 @@
+# CBOM Demo SSH Configuration
+# This config exposes multiple crypto algorithms for discovery
+
+Port 22
+ListenAddress 0.0.0.0
+PermitRootLogin no
+PasswordAuthentication yes
+ChallengeResponseAuthentication no
+UsePAM yes
+
+# Host keys (multiple algorithms for discovery)
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Ciphers (various for CBOM detection)
+Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+
+# MAC algorithms
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
+
+# Kex algorithms
+KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384,diffie-hellman-group-exchange-sha256
+
+# Logging
+SyslogFacility AUTH
+LogLevel VERBOSE
+
+# Allow demo user
+AllowUsers cbomuser

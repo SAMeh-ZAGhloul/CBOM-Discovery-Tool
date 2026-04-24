@@ -1,0 +1,12 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^docker-compose up --build$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^pkill -f \"docker-compose up\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
