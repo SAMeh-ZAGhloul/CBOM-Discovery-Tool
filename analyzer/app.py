@@ -255,6 +255,17 @@ def api_cbom_clear():
         with open(cbom_file, "w") as f:
             json.dump(empty_cbom, f, indent=2)
 
+        # Also clear the source Zeek logs so the CBOM stays empty
+        # until new traffic is captured and fresh logs are written.
+        if os.path.isdir(LOG_PATH):
+            for filename in os.listdir(LOG_PATH):
+                if filename.endswith(".log"):
+                    log_file = os.path.join(LOG_PATH, filename)
+                    try:
+                        os.remove(log_file)
+                    except OSError:
+                        pass
+
         return jsonify({"status": "ok", "message": "CBOM cleared successfully"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500

@@ -36,7 +36,7 @@ services:
     ports:
       - "5001:5000"
     volumes:
-      - ./shared/logs:/app/logs:ro
+      - ./shared/logs:/app/logs
       - ./shared/cbom:/app/cbom
       - ./generate-traffic.sh:/app/generate-traffic.sh:ro
     environment:
