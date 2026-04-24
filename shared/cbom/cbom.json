@@ -2,23 +2,74 @@
   "metadata": {
     "tool": "CBOM Discovery Tool",
     "version": "1.0.0",
-    "generated_at": "2026-04-24T11:35:58.012324Z",
+    "generated_at": "2026-04-24T11:39:32.109471Z",
     "format": "CBOM-1.0"
   },
   "summary": {
-    "total_crypto_assets": 0,
-    "total_services": 0,
+    "total_crypto_assets": 2,
+    "total_services": 1,
     "risk_score": 0,
-    "protocols": {},
-    "algorithms": {},
+    "protocols": {
+      "unknown": 2
+    },
+    "algorithms": {
+      "unknown": 2
+    },
     "key_lengths": {},
     "total_findings": 0,
     "total_certificates": 0,
-    "total_keys": 0
+    "total_keys": 1
   },
-  "crypto_assets": [],
-  "services": [],
+  "crypto_assets": [
+    {
+      "id": "crypto-0",
+      "type": "unknown",
+      "algorithm": "unknown",
+      "protocol": "unknown",
+      "service": "unknown",
+      "source": "unknown",
+      "confidence": "medium",
+      "timestamp": "2026-04-24T11:36:33.371212Z",
+      "connection_uid": "CkIipC3CyD1d3BqlZa",
+      "key_length": null,
+      "hash_algorithm": null
+    },
+    {
+      "id": "crypto-1",
+      "type": "unknown",
+      "algorithm": "unknown",
+      "protocol": "unknown",
+      "service": "unknown",
+      "source": "unknown",
+      "confidence": "medium",
+      "timestamp": "2026-04-24T11:36:34.116240Z",
+      "connection_uid": "CZ6chqs7OUNzocIrh",
+      "key_length": null,
+      "hash_algorithm": null
+    }
+  ],
+  "services": [
+    {
+      "name": "unknown",
+      "protocols": [
+        "unknown"
+      ],
+      "algorithms": [
+        "unknown"
+      ],
+      "asset_count": 2
+    }
+  ],
   "certificates": [],
-  "keys": [],
+  "keys": [
+    {
+      "id": "ssh-0",
+      "host_key": "",
+      "client_key": "",
+      "algorithm": "",
+      "source": "ssh",
+      "timestamp": "2026-04-24T11:36:33.617832Z"
+    }
+  ],
   "findings": []
 }
