@@ -64,9 +64,12 @@ Open your browser: **http://localhost:5001**
 curl -k https://localhost:8443/api/data
 
 # Test SSH Service (password: cbom_demo_2024!)
-ssh -p 2222 cbomuser@localhost
+# Note: On macOS, install sshpass first: brew install sshpass
+sshpass -p 'cbom_demo_2024!' ssh -p 2222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null cbomuser@localhost
 
 # Test Database (password: cbom_demo_pass)
+# Note: On macOS, install libpq first: brew install libpq
+# Then add to PATH: export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 psql "postgresql://postgres:cbom_demo_pass@localhost:5432/crypto_inventory?sslmode=require"
 ```
 
