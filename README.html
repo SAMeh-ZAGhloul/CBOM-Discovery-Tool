@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>README.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> or <div class="page"></div> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="cbom-discovery-tool">CBOM Discovery Tool</h1>
+<p>A complete Cryptographic Bill of Materials (CBOM) discovery toolkit using <strong>Zeek</strong> network monitoring, <strong>Python</strong> analysis, and an <strong>HTML</strong> dashboard. Includes three sample infrastructure applications for testing crypto discovery.</p>
+<h2 id="architecture">Architecture</h2>
+<pre class="hljs"><code><div>┌────────────────────────────────────────────────────────────────┐
+│                        CBOM DISCOVERY STACK                    │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
+│  │   Zeek       │    │   Python     │    │   HTML       │      │
+│  │   Monitor    │───▶│   Analyzer   │───▶│   Dashboard  │      │
+│  │              │    │              │    │              │      │
+│  │ • Network    │    │ • Parse logs │    │ • Real-time  │      │
+│  │   capture    │    │ • Build CBOM │    │   metrics    │      │
+│  │ • Crypto     │    │ • Risk score │    │ • Findings   │      │
+│  │   detection  │    │ • Alerts     │    │ • Export     │      │
+│  └──────────────┘    └──────────────┘    └──────────────┘      │
+│         │                   ▲                   ▲              │
+│         │                   │                   │              │
+│         └───────────────────┴───────────────────               │
+│                      Shared Volumes                            │
+│              /shared/logs  →  /shared/cbom                     │
+├────────────────────────────────────────────────────────────────┤
+│                        SAMPLE APPLICATIONS                     │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐ │
+│  │  Web App    │  │  SSH        │  │  Database               │ │
+│  │  (HTTPS)    │  │  Service    │  │  (PostgreSQL+TLS)       │ │
+│  │             │  │             │  │                         │ │
+│  │ • TLS 1.2+  │  │ • RSA/ECDSA │  │ • TLS 1.2/1.3           │ │
+│  │ • AES-256   │  │ • ED25519   │  │ • SCRAM-SHA-256         │ │
+│  │ • ECDHE     │  │ • AES-CTR   │  │ • RSA Certs             │ │
+│  │ • RSA 2048  │  │ • Curve25519│  │ • AES-GCM               │ │
+│  └─────────────┘  └─────────────┘  └─────────────────────────┘ │
+│       :8443            :2222                :5432              │
+└────────────────────────────────────────────────────────────────┘
+</div></code></pre>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Docker &amp; Docker Compose</li>
+<li>Linux/macOS (for Zeek network capture)</li>
+<li>4GB RAM minimum</li>
+</ul>
+<h3 id="1-start-the-stack">1. Start the Stack</h3>
+<pre class="hljs"><code><div>docker-compose up --build
+</div></code></pre>
+<h3 id="2-access-the-dashboard">2. Access the Dashboard</h3>
+<p>Open your browser: <strong>http://localhost:5001</strong></p>
+<h3 id="3-generate-traffic-for-zeek-to-discover">3. Generate Traffic (for Zeek to discover)</h3>
+<p><strong>Option A — Dashboard (Recommended)</strong><br>
+Open the dashboard at <strong>http://localhost:5001</strong> and use the <strong>Traffic Generator</strong> panel to start any scenario with a single click. Live output streams directly in the UI.</p>
+<p><strong>Option B — CLI Script (Linux only)</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment"># Run all traffic scenarios once (default)</span>
+./generate-traffic.sh
+
+<span class="hljs-comment"># Or run specific scenarios</span>
+./generate-traffic.sh web    <span class="hljs-comment"># HTTPS web app only</span>
+./generate-traffic.sh ssh    <span class="hljs-comment"># SSH service only</span>
+./generate-traffic.sh db     <span class="hljs-comment"># PostgreSQL database only</span>
+./generate-traffic.sh mixed  <span class="hljs-comment"># Simultaneous cross-service traffic</span>
+./generate-traffic.sh loop   <span class="hljs-comment"># Continuously loop all scenarios</span>
+</div></code></pre>
+<p>Alternatively, test services manually:</p>
+<pre class="hljs"><code><div><span class="hljs-comment"># Test HTTPS Web App</span>
+curl -k https://localhost:8443/api/data
+
+<span class="hljs-comment"># Test SSH Service (password: cbom_demo_2024!)</span>
+<span class="hljs-comment"># Note: sshpass first</span>
+sshpass -p <span class="hljs-string">&#x27;cbom_demo_2024!&#x27;</span> ssh -p 2222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null cbomuser@localhost
+
+<span class="hljs-comment"># Test Database (password: cbom_demo_pass)</span>
+<span class="hljs-comment"># Note: install libpq </span>
+<span class="hljs-comment"># Then add to PATH</span>
+psql <span class="hljs-string">&quot;postgresql://postgres:cbom_demo_pass@localhost:5432/crypto_inventory?sslmode=require&quot;</span>
+</div></code></pre>
+<h3 id="4-view-cbom">4. View CBOM</h3>
+<p>The dashboard auto-refreshes every 60 seconds when new logs are detected. Click <strong>Refresh</strong> to force update via the API.</p>
+<h2 id="project-structure">Project Structure</h2>
+<pre class="hljs"><code><div>cbom-discovery/
+├── docker-compose.yml          # Orchestrates all services
+├── generate-traffic.sh         # Traffic generator for sample apps
+├── README.md                   # This file
+│
+├── zeek/                       # Network Monitor
+│   ├── Dockerfile
+│   ├── local.zeek             # Zeek site policy (JSON logs, SSL/SSH scripts)
+│   └── scripts/
+│       └── crypto-detection.zeek   # Loads base SSL/SSH/hash protocols
+│
+├── analyzer/                   # CBOM Analyzer &amp; Dashboard
+│   ├── Dockerfile
+│   ├── requirements.txt        # Flask, watchdog, python-dateutil
+│   ├── app.py                 # Flask web server + file watcher
+│   ├── cbom_generator.py      # CBOM generation logic
+│   └── templates/
+│       └── index.html         # Dashboard UI
+│
+├── sample-apps/               # Target Applications
+│   ├── web-app/               # HTTPS Flask app
+│   │   ├── Dockerfile         # Generates self-signed RSA 2048 cert on build
+│   │   ├── requirements.txt
+│   │   └── app.py
+│   ├── ssh-service/           # OpenSSH server
+│   │   ├── Dockerfile         # Creates RSA, ECDSA, ED25519 host keys
+│   │   └── sshd_config
+│   └── database-service/      # PostgreSQL 16 with SSL
+│       ├── Dockerfile         # Generates server + CA certificates
+│       ├── postgresql.conf    # SSL/TLS 1.2-1.3 settings
+│       ├── pg_hba.conf        # SCRAM-SHA-256 auth, SSL required
+│       └── init.sql           # Sample crypto_inventory tables
+│
+└── shared/                    # Shared volumes
+    ├── logs/                  # Zeek JSON log output
+    └── cbom/                  # Generated CBOM JSON (cbom.json)
+</div></code></pre>
+<h2 id="sample-applications-detail">Sample Applications Detail</h2>
+<h3 id="1-web-application-sample-appsweb-app">1. Web Application (<code>sample-apps/web-app</code>)</h3>
+<ul>
+<li><strong>Technology</strong>: Flask + PyOpenSSL</li>
+<li><strong>Crypto</strong>: TLS 1.2+, RSA 2048-bit self-signed certificate, AES-256-GCM, ECDHE</li>
+<li><strong>Port</strong>: 8443</li>
+<li><strong>Purpose</strong>: Demonstrates HTTPS/TLS discovery</li>
+</ul>
+<h3 id="2-ssh-service-sample-appsssh-service">2. SSH Service (<code>sample-apps/ssh-service</code>)</h3>
+<ul>
+<li><strong>Technology</strong>: OpenSSH server (Ubuntu 22.04)</li>
+<li><strong>Crypto</strong>: RSA 2048, ECDSA P-521, Ed25519 host keys; AES-256-CTR/GCM, Curve25519/ECDH key exchange</li>
+<li><strong>Port</strong>: 2222 (mapped to container port 22)</li>
+<li><strong>Purpose</strong>: Demonstrates SSH crypto discovery</li>
+<li><strong>Credentials</strong>: <code>cbomuser</code> / <code>cbom_demo_2024!</code></li>
+</ul>
+<h3 id="3-database-service-sample-appsdatabase-service">3. Database Service (<code>sample-apps/database-service</code>)</h3>
+<ul>
+<li><strong>Technology</strong>: PostgreSQL 16 with SSL</li>
+<li><strong>Crypto</strong>: TLS 1.2/1.3, SCRAM-SHA-256 auth, RSA 2048 certificates, AES-GCM</li>
+<li><strong>Port</strong>: 5432 (PostgreSQL), 6432 (reserved)</li>
+<li><strong>Purpose</strong>: Demonstrates database TLS discovery</li>
+<li><strong>Credentials</strong>: <code>postgres</code> / <code>cbom_demo_pass</code></li>
+</ul>
+<h2 id="zeek-crypto-detection">Zeek Crypto Detection</h2>
+<p>The Zeek configuration (<code>local.zeek</code>) enables:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SSL/TLS</td>
+<td>Standard Zeek SSL analyzer (heartbleed, known-certs)</td>
+</tr>
+<tr>
+<td>SSH</td>
+<td>Standard Zeek SSH analyzer (geo-data, bruteforce detection)</td>
+</tr>
+<tr>
+<td>X.509</td>
+<td>Certificate logging via SSL analyzer</td>
+</tr>
+<tr>
+<td>File Hashes</td>
+<td>SHA-1, SHA-256, MD5 via <code>hash-all-files</code> framework</td>
+</tr>
+<tr>
+<td>Output Format</td>
+<td>JSON logs with ISO 8601 timestamps</td>
+</tr>
+</tbody>
+</table>
+<p>Zeek runs in <strong>host network mode</strong> (<code>network_mode: host</code>) with <code>NET_RAW</code> and <code>NET_ADMIN</code> capabilities to capture traffic on the host interface.</p>
+<h2 id="cbom-output-format">CBOM Output Format</h2>
+<p>Generated CBOM follows this structure:</p>
+<pre class="hljs"><code><div><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;metadata&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;tool&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;CBOM Discovery Tool&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1.0.0&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;generated_at&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;format&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;CBOM-1.0&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;summary&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;total_crypto_assets&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;total_services&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;total_findings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;total_certificates&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;total_keys&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;risk_score&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;protocols&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;algorithms&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;key_lengths&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;crypto_assets&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;crypto-0&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cipher&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;algorithm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;protocol&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;tcp&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;service&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ssl&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;source&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;confidence&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;medium&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;connection_uid&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;key_length&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;hash_algorithm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;certificates&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cert-0&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;subject&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;issuer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;serial&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;key_algorithm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;signature_algorithm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;key_length&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2048</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;valid_from&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;valid_until&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;sha1_fingerprint&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;sha256_fingerprint&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;source&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;x509&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;keys&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ssh-0&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;host_key&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;client_key&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;algorithm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;source&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ssh&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;services&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ssl&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;protocols&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;tcp&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;algorithms&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;asset_count&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;findings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;finding-0&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;severity&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;high&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;algorithm_risk&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;algorithm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;crypto_type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;recommendation&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</div></code></pre>
+<h2 id="analyzer-features">Analyzer Features</h2>
+<h3 id="integrated-traffic-generator">Integrated Traffic Generator</h3>
+<p>The dashboard includes built-in controls to generate traffic against the sample applications without leaving your browser. Click any scenario button (Web, SSH, Database, Mixed, All, or Loop) and watch live output stream in the panel. A <strong>Clear CBOM</strong> button is also available to reset all discovered cryptographic assets, certificates, and findings.</p>
+<h3 id="auto-regeneration">Auto-Regeneration</h3>
+<p>The analyzer uses <code>watchdog</code> to monitor the shared logs directory. CBOM is automatically regenerated when:</p>
+<ul>
+<li>New <code>.log</code> files are created</li>
+<li>Existing <code>.log</code> files are modified</li>
+<li>Every 60 seconds (periodic refresh)</li>
+</ul>
+<h3 id="risk-scoring">Risk Scoring</h3>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>Criteria</th>
+<th>Score Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Critical</td>
+<td>MD5, SHA1, RC4, DES, 3DES, DSA, &lt;128-bit keys</td>
+<td>+25</td>
+</tr>
+<tr>
+<td>High</td>
+<td>RSA/DH &lt;2048 bits, expired certificates</td>
+<td>+15</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Legacy algorithms (RSA/DH ≥2048), certs expiring &lt;30d, 128-255 bit keys</td>
+<td>+5</td>
+</tr>
+<tr>
+<td>Low</td>
+<td>Modern algorithms, adequate key lengths</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<h3 id="risk-recommendations">Risk Recommendations</h3>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MD5</td>
+<td>Replace with SHA-256 or SHA-3</td>
+</tr>
+<tr>
+<td>SHA-1</td>
+<td>Replace with SHA-256 or SHA-3</td>
+</tr>
+<tr>
+<td>RC4</td>
+<td>Disable RC4, use AES-GCM or ChaCha20-Poly1305</td>
+</tr>
+<tr>
+<td>DES/3DES</td>
+<td>Replace with AES-256-GCM</td>
+</tr>
+<tr>
+<td>RSA</td>
+<td>Consider migrating to ECDSA or Ed25519</td>
+</tr>
+<tr>
+<td>DH</td>
+<td>Use ECDHE with Curve25519 for key exchange</td>
+</tr>
+</tbody>
+</table>
+<h2 id="traffic-generator">Traffic Generator</h2>
+<p>The <code>generate-traffic.sh</code> script automates network traffic generation across all sample applications to help Zeek discover cryptographic assets.</p>
+<h3 id="prerequisites-1">Prerequisites</h3>
+<ul>
+<li><code>curl</code> (required)</li>
+<li><code>sshpass</code> (optional, for SSH scenarios)</li>
+<li><code>psql</code> (optional, for database scenarios)</li>
+</ul>
+<h3 id="usage">Usage</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>./generate-traffic.sh</code> or <code>./generate-traffic.sh all</code></td>
+<td>Run all scenarios once</td>
+</tr>
+<tr>
+<td><code>./generate-traffic.sh web</code></td>
+<td>HTTPS web application traffic only</td>
+</tr>
+<tr>
+<td><code>./generate-traffic.sh ssh</code></td>
+<td>SSH service traffic only</td>
+</tr>
+<tr>
+<td><code>./generate-traffic.sh db</code></td>
+<td>PostgreSQL database traffic only</td>
+</tr>
+<tr>
+<td><code>./generate-traffic.sh mixed</code></td>
+<td>Simultaneous cross-service traffic</td>
+</tr>
+<tr>
+<td><code>./generate-traffic.sh loop</code></td>
+<td>Continuously loop all scenarios</td>
+</tr>
+<tr>
+<td><code>./generate-traffic.sh help</code></td>
+<td>Show help message</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scenarios">Scenarios</h3>
+<p><strong>Web Scenario</strong></p>
+<ul>
+<li>Fetches homepage, <code>/api/data</code>, and <code>/api/health</code></li>
+<li>Simulates 10 rapid load requests</li>
+</ul>
+<p><strong>SSH Scenario</strong></p>
+<ul>
+<li>Executes <code>uname -a</code>, <code>ls -la</code>, and <code>cat /etc/os-release</code></li>
+<li>Opens 5 rapid SSH connections</li>
+</ul>
+<p><strong>Database Scenario</strong></p>
+<ul>
+<li>Runs SELECT, COUNT, and INSERT queries on <code>crypto_inventory</code></li>
+<li>Simulates 5 rapid DB connections over TLS</li>
+</ul>
+<p><strong>Mixed Scenario</strong></p>
+<ul>
+<li>Runs web, SSH, and database requests in parallel</li>
+</ul>
+<h3 id="loop-mode">Loop Mode</h3>
+<pre class="hljs"><code><div>./generate-traffic.sh loop
+</div></code></pre>
+<p>Runs all scenarios continuously with a 10-second delay between iterations. Press <code>Ctrl+C</code> to stop.</p>
+<h2 id="api-endpoints">API Endpoints</h2>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td>GET</td>
+<td>Main HTML dashboard</td>
+</tr>
+<tr>
+<td><code>/api/cbom</code></td>
+<td>GET</td>
+<td>Full CBOM JSON</td>
+</tr>
+<tr>
+<td><code>/api/summary</code></td>
+<td>GET</td>
+<td>Summary statistics only</td>
+</tr>
+<tr>
+<td><code>/api/findings</code></td>
+<td>GET</td>
+<td>Security findings list</td>
+</tr>
+<tr>
+<td><code>/api/assets</code></td>
+<td>GET</td>
+<td>Crypto assets list</td>
+</tr>
+<tr>
+<td><code>/api/certificates</code></td>
+<td>GET</td>
+<td>X.509 certificates</td>
+</tr>
+<tr>
+<td><code>/api/services</code></td>
+<td>GET</td>
+<td>Discovered services</td>
+</tr>
+<tr>
+<td><code>/api/refresh</code></td>
+<td>POST</td>
+<td>Force CBOM regeneration</td>
+</tr>
+<tr>
+<td><code>/download/cbom</code></td>
+<td>GET</td>
+<td>Download CBOM JSON file</td>
+</tr>
+<tr>
+<td><code>/api/traffic/&lt;scenario&gt;</code></td>
+<td>POST</td>
+<td>Run traffic scenario (<code>web</code>, <code>ssh</code>, <code>db</code>, <code>mixed</code>, <code>all</code>, <code>loop</code>)</td>
+</tr>
+<tr>
+<td><code>/api/traffic/status</code></td>
+<td>GET</td>
+<td>Traffic generator status and live output</td>
+</tr>
+<tr>
+<td><code>/api/traffic/stop</code></td>
+<td>POST</td>
+<td>Stop active traffic generation</td>
+</tr>
+<tr>
+<td><code>/api/cbom/clear</code></td>
+<td>POST</td>
+<td>Clear CBOM data (reset to empty)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="zeek-not-capturing-traffic">Zeek not capturing traffic</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Check interface name</span>
+docker <span class="hljs-built_in">exec</span> zeek-monitor ip <span class="hljs-built_in">link</span> show
+
+<span class="hljs-comment"># Run Zeek manually with correct interface</span>
+docker <span class="hljs-built_in">exec</span> zeek-monitor zeek -i eth0 <span class="hljs-built_in">local</span>
+</div></code></pre>
+<h3 id="no-logs-appearing">No logs appearing</h3>
+<ul>
+<li>Ensure sample apps are generating traffic</li>
+<li>Check shared volume permissions: <code>chmod 777 shared/logs</code></li>
+<li>Verify Zeek is running: <code>docker logs zeek-monitor</code></li>
+</ul>
+<h3 id="dashboard-shows-empty">Dashboard shows empty</h3>
+<ul>
+<li>Wait 30-60 seconds for Zeek to process traffic</li>
+<li>Click <strong>Refresh</strong> button on dashboard</li>
+<li>Check analyzer logs: <code>docker logs cbom-analyzer</code></li>
+</ul>
+<h2 id="security-notes">Security Notes</h2>
+<p>⚠️ <strong>This is a demo tool</strong>. Do not use in production without:</p>
+<ul>
+<li>Proper certificate management (not self-signed)</li>
+<li>Strong authentication</li>
+<li>Network segmentation</li>
+<li>Log retention policies</li>
+<li>Regular algorithm updates</li>
+</ul>
+<h2 id="1-system-context-diagram-c4-level-1">1. System Context Diagram (C4 Level 1)</h2>
+<pre><code class="language-mermaid"><div class="mermaid">architecture-beta
+    service analyst("Security Analyst")
+    service cbom_system("CBOM Discovery System")[server]
+    service target_infra("Target Infrastructure")[cloud]
+    service export_dest("Export Destination")[disk]
+
+    analyst --> cbom_system : Reviews crypto inventory
+    cbom_system --> target_infra : Monitors network traffic
+    cbom_system --> export_dest : Exports CBOM JSON
+</div></code></pre>
+<p><strong>Diagram Description</strong>
+This C4 Level 1 diagram shows the CBOM Discovery System at the center, used by a Security Analyst to review cryptographic inventory. The system monitors network traffic from Target Infrastructure and exports CBOM reports to a destination such as a SIEM or file store.</p>
+<hr>
+<h2 id="2-container-diagram-c4-level-2">2. Container Diagram (C4 Level 2)</h2>
+<pre><code class="language-mermaid"><div class="mermaid">architecture-beta
+    group cbom_platform("CBOM Discovery Platform")
+    group target_env("Target Environment")
+
+    service zeek("Zeek Monitor")[server] in cbom_platform
+    service analyzer("Python Analyzer")[server] in cbom_platform
+    service dashboard("HTML Dashboard")[server] in cbom_platform
+    service logs_store("Log Storage")[disk] in cbom_platform
+    service cbom_store("CBOM Storage")[disk] in cbom_platform
+
+    service web_app("Web Application")[server] in target_env
+    service ssh_svc("SSH Service")[server] in target_env
+    service db_svc("Database Service")[database] in target_env
+
+    zeek:R --> L:logs_store : Writes Zeek logs
+    analyzer:R --> L:logs_store : Reads logs
+    analyzer:R --> L:cbom_store : Writes CBOM JSON
+    dashboard:R --> L:cbom_store : Reads CBOM
+    dashboard:R --> L:analyzer : REST API
+
+    zeek:R --> L:web_app : Monitors HTTPS
+    zeek:R --> L:ssh_svc : Monitors SSH
+    zeek:R --> L:db_svc : Monitors PostgreSQL
+</div></code></pre>
+<p><strong>Diagram Description</strong>
+This C4 Level 2 diagram decomposes the CBOM Discovery Platform into five containers: Zeek Monitor captures network traffic and writes logs; Python Analyzer parses logs and generates CBOM JSON; HTML Dashboard serves the UI via REST API; Log Storage and CBOM Storage are shared disk volumes. Three sample applications in the Target Environment provide cryptographic traffic for discovery.</p>
+<hr>
+<h2 id="3-component-diagram-c4-level-3-for-the-python-analyzer">3. Component Diagram (C4 Level 3) for the Python Analyzer</h2>
+<pre><code class="language-mermaid"><div class="mermaid">architecture-beta
+    group analyzer_ctr("Python Analyzer Container")
+
+    service flask_app("Flask Web Server")[server] in analyzer_ctr
+    service api_router("API Router")[server] in analyzer_ctr
+    service file_watcher("File Watcher")[server] in analyzer_ctr
+    service log_parser("Log Parser")[server] in analyzer_ctr
+    service cbom_gen("CBOM Generator")[server] in analyzer_ctr
+    service risk_assessor("Risk Assessor")[server] in analyzer_ctr
+
+    flask_app:R --> L:api_router : Route HTTP requests
+    api_router:R --> L:cbom_gen : Request CBOM data
+    file_watcher:R --> L:log_parser : New log detected
+    log_parser:R --> L:cbom_gen : Parsed crypto events
+    cbom_gen:R --> L:risk_assessor : Assets for scoring
+    risk_assessor:L --> R:cbom_gen : Risk findings
+</div></code></pre>
+<p><strong>Diagram Description</strong>
+This C4 Level 3 diagram shows the internal components of the Python Analyzer container. The Flask Web Server routes requests through the API Router. The File Watcher detects new Zeek logs and triggers the Log Parser, which feeds parsed events to the CBOM Generator. The Risk Assessor evaluates cryptographic assets and returns findings back into the CBOM.</p>
+<hr>
+<h2 id="4-deployment-diagram">4. Deployment Diagram</h2>
+<pre><code class="language-mermaid"><div class="mermaid">architecture-beta
+    group docker_host("Docker Host")
+
+    service zeek("Zeek Container")[server] in docker_host
+    service analyzer("Analyzer Container")[server] in docker_host
+    service web_app("Web App Container")[server] in docker_host
+    service ssh_svc("SSH Container")[server] in docker_host
+    service db_svc("DB Container")[database] in docker_host
+
+    service logs_vol("Logs Volume")[disk] in docker_host
+    service cbom_vol("CBOM Volume")[disk] in docker_host
+
+    zeek:R --> L:logs_vol : Mount read-write
+    analyzer:R --> L:logs_vol : Mount read-only
+    analyzer:R --> L:cbom_vol : Mount read-write
+
+    zeek:R --> L:web_app : Traffic capture
+    zeek:R --> L:ssh_svc : Traffic capture
+    zeek:R --> L:db_svc : Traffic capture
+</div></code></pre>
+<p><strong>Diagram Description</strong>
+This deployment diagram shows all services running as Docker containers on a single host. Zeek has read-write access to the Logs Volume, while the Analyzer mounts it read-only and writes generated CBOM files to the CBOM Volume. Zeek captures traffic from the three sample application containers.</p>
+<hr>
+<h2 id="5-runtime--sequence-diagram-1--crypto-discovery-flow">5. Runtime / Sequence Diagram 1 — Crypto Discovery Flow</h2>
+<pre><code class="language-mermaid"><div class="mermaid">sequenceDiagram
+    actor Analyst
+    participant WebApp as Web Application
+    participant Zeek as Zeek Monitor
+    participant Logs as Log Storage
+    participant Analyzer as Python Analyzer
+    participant Dashboard as HTML Dashboard
+
+    Analyst->>WebApp: curl https://localhost:8443
+    WebApp-->>Analyst: TLS handshake (RSA/AES/ECDHE)
+
+    Zeek->>Zeek: Capture TLS traffic
+    Zeek->>Logs: Write crypto.log, ssl.log, x509.log
+
+    Analyzer->>Logs: Watch for new logs
+    Logs-->>Analyzer: Return log entries
+
+    Analyzer->>Analyzer: Parse crypto events
+    Analyzer->>Analyzer: Generate CBOM JSON
+    Analyzer->>Analyzer: Calculate risk score
+
+    Analyst->>Dashboard: Open http://localhost:5000
+    Dashboard->>Analyzer: GET /api/cbom
+    Analyzer-->>Dashboard: Return CBOM data
+    Dashboard-->>Analyst: Render findings and assets
+
+    classDef user fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000;
+    classDef container fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000;
+    classDef database fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#000;
+
+    class Analyst user;
+    class WebApp,Zeek,Analyzer,Dashboard container;
+    class Logs database;
+</div></code></pre>
+<p><strong>Diagram Description</strong>
+This sequence diagram illustrates the end-to-end crypto discovery flow. The Analyst generates TLS traffic by curling the Web Application. Zeek captures the traffic and writes structured logs. The Python Analyzer detects new logs, parses cryptographic events, generates a CBOM, and scores risks. The Analyst then views the results through the HTML Dashboard.</p>
+<hr>
+<h2 id="6-runtime--sequence-diagram-2--user-refresh-flow">6. Runtime / Sequence Diagram 2 — User Refresh Flow</h2>
+<pre><code class="language-mermaid"><div class="mermaid">sequenceDiagram
+    actor Analyst
+    participant Dashboard as HTML Dashboard
+    participant API as API Router
+    participant CBOMGen as CBOM Generator
+    participant LogParser as Log Parser
+    participant Logs as Log Storage
+
+    Analyst->>Dashboard: Click Refresh button
+    Dashboard->>API: POST /api/refresh
+
+    API->>CBOMGen: Trigger regeneration
+    CBOMGen->>LogParser: Process all logs
+
+    LogParser->>Logs: Read crypto.log
+    Logs-->>LogParser: SSL cipher entries
+    LogParser->>Logs: Read certificates.log
+    Logs-->>LogParser: X.509 entries
+    LogParser->>Logs: Read ssh.log
+    Logs-->>LogParser: SSH key entries
+
+    LogParser-->>CBOMGen: Parsed crypto assets
+    CBOMGen->>CBOMGen: Assess risks
+    CBOMGen->>CBOMGen: Build summary
+
+    CBOMGen-->>API: Updated CBOM object
+    API-->>Dashboard: JSON response
+    Dashboard-->>Analyst: Update UI with new data
+
+    classDef user fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000;
+    classDef container fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000;
+    classDef database fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#000;
+
+    class Analyst user;
+    class Dashboard,API,CBOMGen,LogParser container;
+    class Logs database;
+</div></code></pre>
+<p><strong>Diagram Description</strong>
+This sequence diagram shows the synchronous refresh flow initiated by the Analyst. The Dashboard forwards the refresh request to the API Router, which triggers the CBOM Generator. The Log Parser reads all Zeek log types (crypto, certificates, SSH) and returns parsed assets. The CBOM Generator reassesses risks, rebuilds the summary, and returns the updated CBOM to the Dashboard for rendering.</p>
+<hr>
+<h2 id="7-data-model--er-diagram">7. Data Model / ER Diagram</h2>
+<pre><code class="language-mermaid"><div class="mermaid">erDiagram
+    CBOM ||--o{ CRYPTO_ASSET : contains
+    CBOM ||--o{ CERTIFICATE : contains
+    CBOM ||--o{ CRYPTO_KEY : contains
+    CBOM ||--o{ SERVICE : contains
+    CBOM ||--o{ FINDING : contains
+    CBOM ||--|| SUMMARY : has
+
+    CBOM {
+        string tool
+        string version
+        timestamp generated_at
+        string format
+    }
+
+    SUMMARY {
+        int total_crypto_assets
+        int total_services
+        int risk_score
+        int total_findings
+        int total_certificates
+        int total_keys
+    }
+
+    CRYPTO_ASSET {
+        string id
+        string type
+        string algorithm
+        string protocol
+        string service
+        string source
+        string confidence
+        timestamp timestamp
+        string connection_uid
+        int key_length
+        string hash_algorithm
+    }
+
+    CERTIFICATE {
+        string id
+        string subject
+        string issuer
+        string serial
+        string key_algorithm
+        string signature_algorithm
+        int key_length
+        timestamp valid_from
+        timestamp valid_until
+        string sha1_fingerprint
+        string sha256_fingerprint
+        string source
+    }
+
+    CRYPTO_KEY {
+        string id
+        string host_key
+        string client_key
+        string key_alg
+        string source
+        timestamp ts
+    }
+
+    SERVICE {
+        string name
+        string protocols
+        string algorithms
+        int asset_count
+    }
+
+    FINDING {
+        string id
+        string severity
+        string type
+        string description
+        string algorithm
+        string crypto_type
+        string recommendation
+    }
+</div></code></pre>
+<p><strong>Diagram Description</strong>
+This ER diagram models the CBOM JSON structure produced by the Python Analyzer. A single CBOM record contains metadata, one summary aggregate, and collections of crypto assets, certificates, keys, discovered services, and security findings. Each entity captures fields necessary for inventory and risk assessment.</p>
+<hr>
+<h2 id="8-network--infrastructure-diagram">8. Network / Infrastructure Diagram</h2>
+<pre><code class="language-mermaid"><div class="mermaid">architecture-beta
+    group docker_host("Docker Host")
+
+    service host("Host OS")[server] in docker_host
+    service bridge("Docker Bridge")[cloud] in docker_host
+
+    service zeek("Zeek\neth0/any")[server] in docker_host
+    service analyzer("Analyzer\n:5000")[server] in docker_host
+    service web_app("Web App\n:8443")[server] in docker_host
+    service ssh_svc("SSH\n:2222")[server] in docker_host
+    service db_svc("Database\n:5432")[database] in docker_host
+
+    service logs_vol("Logs Volume")[disk] in docker_host
+    service cbom_vol("CBOM Volume")[disk] in docker_host
+
+    host --> bridge : Network bridge
+    bridge --> zeek
+    bridge --> analyzer
+    bridge --> web_app
+    bridge --> ssh_svc
+    bridge --> db_svc
+
+    zeek:R --> L:logs_vol : Shared mount
+    analyzer:R --> L:logs_vol : Shared mount
+    analyzer:R --> L:cbom_vol : Shared mount
+
+    zeek:R --> L:web_app : Traffic capture
+    zeek:R --> L:ssh_svc : Traffic capture
+    zeek:R --> L:db_svc : Traffic capture
+</div></code></pre>
+<p><strong>Diagram Description</strong>
+This network diagram shows the Docker infrastructure topology. All containers connect through the Docker Bridge. Zeek monitors traffic to the Web App (8443), SSH Service (2222), and Database (5432). The Analyzer exposes port 5000 for the dashboard. Logs Volume and CBOM Volume are shared mounts between Zeek and the Analyzer.</p>
+
+</body>
+</html>
