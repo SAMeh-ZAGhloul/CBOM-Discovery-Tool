@@ -876,87 +876,87 @@ docker <span class="hljs-built_in">exec</span> zeek-monitor zeek -i eth0 <span c
 </ul>
 <h2 id="1-system-context-diagram-c4-level-1">1. System Context Diagram (C4 Level 1)</h2>
 <pre><code class="language-mermaid"><div class="mermaid">architecture-beta
-    service analyst("Security Analyst")
-    service cbom_system("CBOM Discovery System")[server]
-    service target_infra("Target Infrastructure")[cloud]
-    service export_dest("Export Destination")[disk]
+    service analyst(user)[Security Analyst]
+    service cbom_system(server)[CBOM Discovery System]
+    service target_infra(cloud)[Target Infrastructure]
+    service export_dest(disk)[Export Destination]
 
-    analyst --> cbom_system : Reviews crypto inventory
-    cbom_system --> target_infra : Monitors network traffic
-    cbom_system --> export_dest : Exports CBOM JSON
+    analyst:R --> L:cbom_system
+    cbom_system:R --> L:target_infra
+    cbom_system:B --> T:export_dest
 </div></code></pre>
 <p><strong>Diagram Description</strong>
 This C4 Level 1 diagram shows the CBOM Discovery System at the center, used by a Security Analyst to review cryptographic inventory. The system monitors network traffic from Target Infrastructure and exports CBOM reports to a destination such as a SIEM or file store.</p>
 <hr>
 <h2 id="2-container-diagram-c4-level-2">2. Container Diagram (C4 Level 2)</h2>
 <pre><code class="language-mermaid"><div class="mermaid">architecture-beta
-    group cbom_platform("CBOM Discovery Platform")
-    group target_env("Target Environment")
+    group cbom_platform(cloud)[CBOM Discovery Platform]
+    group target_env(cloud)[Target Environment]
 
-    service zeek("Zeek Monitor")[server] in cbom_platform
-    service analyzer("Python Analyzer")[server] in cbom_platform
-    service dashboard("HTML Dashboard")[server] in cbom_platform
-    service logs_store("Log Storage")[disk] in cbom_platform
-    service cbom_store("CBOM Storage")[disk] in cbom_platform
+    service zeek(server)[Zeek Monitor] in cbom_platform
+    service analyzer(server)[Python Analyzer] in cbom_platform
+    service dashboard(server)[HTML Dashboard] in cbom_platform
+    service logs_store(disk)[Log Storage] in cbom_platform
+    service cbom_store(disk)[CBOM Storage] in cbom_platform
 
-    service web_app("Web Application")[server] in target_env
-    service ssh_svc("SSH Service")[server] in target_env
-    service db_svc("Database Service")[database] in target_env
+    service web_app(server)[Web Application] in target_env
+    service ssh_svc(server)[SSH Service] in target_env
+    service db_svc(database)[Database Service] in target_env
 
-    zeek:R --> L:logs_store : Writes Zeek logs
-    analyzer:R --> L:logs_store : Reads logs
-    analyzer:R --> L:cbom_store : Writes CBOM JSON
-    dashboard:R --> L:cbom_store : Reads CBOM
-    dashboard:R --> L:analyzer : REST API
+    zeek:R --> L:logs_store
+    analyzer:L --> R:logs_store
+    analyzer:R --> L:cbom_store
+    dashboard:B --> T:cbom_store
+    dashboard:L --> R:analyzer
 
-    zeek:R --> L:web_app : Monitors HTTPS
-    zeek:R --> L:ssh_svc : Monitors SSH
-    zeek:R --> L:db_svc : Monitors PostgreSQL
+    zeek:B --> T:web_app
+    zeek:R --> L:ssh_svc
+    zeek:T --> B:db_svc
 </div></code></pre>
 <p><strong>Diagram Description</strong>
 This C4 Level 2 diagram decomposes the CBOM Discovery Platform into five containers: Zeek Monitor captures network traffic and writes logs; Python Analyzer parses logs and generates CBOM JSON; HTML Dashboard serves the UI via REST API; Log Storage and CBOM Storage are shared disk volumes. Three sample applications in the Target Environment provide cryptographic traffic for discovery.</p>
 <hr>
 <h2 id="3-component-diagram-c4-level-3-for-the-python-analyzer">3. Component Diagram (C4 Level 3) for the Python Analyzer</h2>
 <pre><code class="language-mermaid"><div class="mermaid">architecture-beta
-    group analyzer_ctr("Python Analyzer Container")
+    group analyzer_ctr(server)[Python Analyzer Container]
 
-    service flask_app("Flask Web Server")[server] in analyzer_ctr
-    service api_router("API Router")[server] in analyzer_ctr
-    service file_watcher("File Watcher")[server] in analyzer_ctr
-    service log_parser("Log Parser")[server] in analyzer_ctr
-    service cbom_gen("CBOM Generator")[server] in analyzer_ctr
-    service risk_assessor("Risk Assessor")[server] in analyzer_ctr
+    service flask_app(server)[Flask Web Server] in analyzer_ctr
+    service api_router(server)[API Router] in analyzer_ctr
+    service file_watcher(server)[File Watcher] in analyzer_ctr
+    service log_parser(server)[Log Parser] in analyzer_ctr
+    service cbom_gen(server)[CBOM Generator] in analyzer_ctr
+    service risk_assessor(server)[Risk Assessor] in analyzer_ctr
 
-    flask_app:R --> L:api_router : Route HTTP requests
-    api_router:R --> L:cbom_gen : Request CBOM data
-    file_watcher:R --> L:log_parser : New log detected
-    log_parser:R --> L:cbom_gen : Parsed crypto events
-    cbom_gen:R --> L:risk_assessor : Assets for scoring
-    risk_assessor:L --> R:cbom_gen : Risk findings
+    flask_app:R --> L:api_router
+    api_router:R --> L:cbom_gen
+    file_watcher:B --> T:log_parser
+    log_parser:R --> L:cbom_gen
+    cbom_gen:R --> L:risk_assessor
+    risk_assessor:L --> R:cbom_gen
 </div></code></pre>
 <p><strong>Diagram Description</strong>
 This C4 Level 3 diagram shows the internal components of the Python Analyzer container. The Flask Web Server routes requests through the API Router. The File Watcher detects new Zeek logs and triggers the Log Parser, which feeds parsed events to the CBOM Generator. The Risk Assessor evaluates cryptographic assets and returns findings back into the CBOM.</p>
 <hr>
 <h2 id="4-deployment-diagram">4. Deployment Diagram</h2>
 <pre><code class="language-mermaid"><div class="mermaid">architecture-beta
-    group docker_host("Docker Host")
+    group docker_host(server)[Docker Host]
 
-    service zeek("Zeek Container")[server] in docker_host
-    service analyzer("Analyzer Container")[server] in docker_host
-    service web_app("Web App Container")[server] in docker_host
-    service ssh_svc("SSH Container")[server] in docker_host
-    service db_svc("DB Container")[database] in docker_host
+    service zeek(server)[Zeek Container] in docker_host
+    service analyzer(server)[Analyzer Container] in docker_host
+    service web_app(server)[Web App Container] in docker_host
+    service ssh_svc(server)[SSH Container] in docker_host
+    service db_svc(database)[DB Container] in docker_host
 
-    service logs_vol("Logs Volume")[disk] in docker_host
-    service cbom_vol("CBOM Volume")[disk] in docker_host
+    service logs_vol(disk)[Logs Volume] in docker_host
+    service cbom_vol(disk)[CBOM Volume] in docker_host
 
-    zeek:R --> L:logs_vol : Mount read-write
-    analyzer:R --> L:logs_vol : Mount read-only
-    analyzer:R --> L:cbom_vol : Mount read-write
+    zeek:B --> T:logs_vol
+    analyzer:L --> R:logs_vol
+    analyzer:R --> L:cbom_vol
 
-    zeek:R --> L:web_app : Traffic capture
-    zeek:R --> L:ssh_svc : Traffic capture
-    zeek:R --> L:db_svc : Traffic capture
+    zeek:R --> L:web_app
+    zeek:B --> T:ssh_svc
+    zeek:T --> B:db_svc
 </div></code></pre>
 <p><strong>Diagram Description</strong>
 This deployment diagram shows all services running as Docker containers on a single host. Zeek has read-write access to the Logs Volume, while the Analyzer mounts it read-only and writes generated CBOM files to the CBOM Volume. Zeek captures traffic from the three sample application containers.</p>
@@ -1125,34 +1125,34 @@ This ER diagram models the CBOM JSON structure produced by the Python Analyzer. 
 <hr>
 <h2 id="8-network--infrastructure-diagram">8. Network / Infrastructure Diagram</h2>
 <pre><code class="language-mermaid"><div class="mermaid">architecture-beta
-    group docker_host("Docker Host")
+    group docker_host(server)[Docker Host]
 
-    service host("Host OS")[server] in docker_host
-    service bridge("Docker Bridge")[cloud] in docker_host
+    service host(server)[Host OS] in docker_host
+    service bridge(cloud)[Docker Bridge] in docker_host
 
-    service zeek("Zeek\neth0/any")[server] in docker_host
-    service analyzer("Analyzer\n:5000")[server] in docker_host
-    service web_app("Web App\n:8443")[server] in docker_host
-    service ssh_svc("SSH\n:2222")[server] in docker_host
-    service db_svc("Database\n:5432")[database] in docker_host
+    service zeek(server)[Zeek eth0/any] in docker_host
+    service analyzer(server)[Analyzer :5000] in docker_host
+    service web_app(server)[Web App :8443] in docker_host
+    service ssh_svc(server)[SSH :2222] in docker_host
+    service db_svc(database)[Database :5432] in docker_host
 
-    service logs_vol("Logs Volume")[disk] in docker_host
-    service cbom_vol("CBOM Volume")[disk] in docker_host
+    service logs_vol(disk)[Logs Volume] in docker_host
+    service cbom_vol(disk)[CBOM Volume] in docker_host
 
-    host --> bridge : Network bridge
-    bridge --> zeek
-    bridge --> analyzer
-    bridge --> web_app
-    bridge --> ssh_svc
-    bridge --> db_svc
+    host:R --> L:bridge
+    bridge:B --> T:zeek
+    bridge:L --> R:analyzer
+    bridge:R --> L:web_app
+    bridge:T --> B:ssh_svc
+    bridge:B --> T:db_svc
 
-    zeek:R --> L:logs_vol : Shared mount
-    analyzer:R --> L:logs_vol : Shared mount
-    analyzer:R --> L:cbom_vol : Shared mount
+    zeek:L --> R:logs_vol
+    analyzer:B --> T:logs_vol
+    analyzer:R --> L:cbom_vol
 
-    zeek:R --> L:web_app : Traffic capture
-    zeek:R --> L:ssh_svc : Traffic capture
-    zeek:R --> L:db_svc : Traffic capture
+    zeek:R --> L:web_app
+    zeek:B --> T:ssh_svc
+    zeek:T --> B:db_svc
 </div></code></pre>
 <p><strong>Diagram Description</strong>
 This network diagram shows the Docker infrastructure topology. All containers connect through the Docker Bridge. Zeek monitors traffic to the Web App (8443), SSH Service (2222), and Database (5432). The Analyzer exposes port 5000 for the dashboard. Logs Volume and CBOM Volume are shared mounts between Zeek and the Analyzer.</p>
